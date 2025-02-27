@@ -5,15 +5,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{% static 'add_user/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'add_user/css/sidebar.css' %}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    {% block css %}
+    <style>
+        /* Layout Styles */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #wrapper{
+            display: flex;
+            flex-wrap: nowrap;
+        }
+        #content {
+            background: rgb(255, 255, 255);
+            padding: 30px;
+            min-height: 100vh;
+        }
+    </style>
+    {% endblock %}    
+    
 </head>
 <body>
-    <div class ="container mt-5">
-        <h2 class="text-center alert alert-danger"> Admin Panel </h2>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar (2 columns on large screens, full width on small screens) -->
+            <div class="col-lg-2 col-md-3 col-sm-12 p-0">
+                {% include 'add_user/sidebar.html' %}
+            </div>
 
-        {% block content %}  {% endblock content %}
+            <!-- Main Content Area (10 columns on large screens, full width on small screens) -->
+            <div id="content" class="col-lg-10 col-md-9 col-sm-12">
+                <h2 class="text-center alert alert-info"> Admin Panel </h2>
+                
+                {% block content %}  
+                <!-- This will be replaced by child templates -->
+                {% endblock content %}
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
     <script src="{% static 'add_user/js/jquery.js' %}"></script> 
     <script src="{% static 'add_user/js/popper.js' %}"></script> 
     <script src="{% static 'add_user/js/bootstrap.js' %}"></script> 
+    <script src="{% static 'js/delete.js' %}"></script>
+    {% block script %} {% endblock %}
 </body>
 </html>
+
