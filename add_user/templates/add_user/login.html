@@ -1,0 +1,138 @@
+{% block css %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f4f4f9;
+    }
+
+    .login-container {
+        background: #ffffff;
+        padding: 20px 40px;
+        border-radius: 10px;
+        box-shadow: 4px 4px 2px 4px rgba(46,112,136,255);
+        width: 100%;
+        max-width: 400px;
+        border: 1px solid rgba(46,112,136);
+    }
+
+    .login-container h2 {
+        margin-bottom: 20px;
+        {% comment %} color: rgb(233, 136, 9); {% endcomment %}
+        color: black;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: black;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #007BFF;
+    }
+
+    .login-button {
+        width: 100%;
+        padding: 10px;
+        background: linear-gradient(135deg, #2e7088,rgb(141, 212, 238));
+        color: black;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .login-button:hover {
+        background: linear-gradient(135deg, #8DD4EE,  #2e7088); 
+        color: black;
+    }
+
+    .forgot-password {
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .forgot-password a {
+        color: rgb(233, 136, 9);
+        text-decoration: none;
+    }
+
+    .forgot-password a:hover {
+        text-decoration: underline;
+    }
+
+    .alert {
+        padding: 10px;
+        color: red;
+        border-radius: 5px;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="login-container">
+    {% if messages %}
+        <div class="alert">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <h2>Login</h2>
+    <form method="post" autocomplete = "off" >
+        {% csrf_token %}
+        <div class="form-group" >
+            <label for="username">Username</label>
+            <input type="text" placeholder="Enter username" id="username" name="username" autocomplete = "off" required>
+        </div>
+        <div class="form-group" >
+            <label for="password">Password</label>
+            <input type="password" placeholder="Enter password" id="password" name="password" autocomplete = "new-password" required>
+        </div>
+        <button type="submit" class="login-button">Login</button>
+    </form>
+    {% comment %} <div class="forgot-password">
+        <a href="{% url 'password_reset' %}">Forgot Password?</a>
+    </div> {% endcomment %}
+</div>
+{% endblock content %}
+
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.location.pathname.includes("login")) {
+            let usernameField = document.getElementById("username");
+            let passwordField = document.getElementById("password");
+
+            if (usernameField) usernameField.value = "";
+            if (passwordField) passwordField.value = "";
+        }
+    }); 
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("JavaScript is running on the login page!");
+    });
+    
+</script>
+{% endblock %}

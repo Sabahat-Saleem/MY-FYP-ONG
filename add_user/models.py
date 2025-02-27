@@ -13,3 +13,4 @@ class User(models.Model):
             else:
                 self.id = 1
         super(User, self).save(*args, **kwargs)
+        
