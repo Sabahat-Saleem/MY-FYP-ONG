@@ -120,11 +120,11 @@ background-color: #d4f1f9;
 
 }*/
 
-.main-menu .nav-text {
+.main-menu .nav-text span{
 position:relative;
 display:table-cell;
 vertical-align:middle;
-width:190px;
+width: 200px;
 font-family: 'Titillium Web', sans-serif;
 font-weight: bold;
 color: #ffffff;
