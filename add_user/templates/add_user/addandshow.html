@@ -2,16 +2,16 @@
 
  {% block content%} 
  <div class="row">
-    <div class="col-lg-6">
+    <div class="col-lg-4">
         <h4 class = "text-center alert alert-info"> Add new user </h4>
-        <form action="" method ="POST" autocomplete = "off" > 
+        <form action="" method ="POST" > 
          {% csrf_token %}
         {{ form.as_p }}
          <input type="submit" class = "btn btn-success" value ="Add"  autocomplete = "off">
      </form>
     </div>
 
-     <div class="col-lg-6 ">
+     <div class="col-lg-8">
         <h4 class = "text-center alert alert-info"> REGISTERED HOD'S INFO </h4>
         {% if hod %}
                 <table class="table">
@@ -30,23 +30,25 @@
                         <th scope="row">{{hd.id}}</th>
                         <td>{{hd.name}}</td>
                         <td>{{hd.email}}</td>
-                        <td>{{hd.password}}</td>
+                        <td>-------</td>
                         <td>
-                            <a href="{% url 'updatedata' hd.id %}" class="btn btn-warning btn-sm"
-                            style="background-color: #1c8456; border-color: #1c8456; color: white;"
-                            onmouseover="this.style.backgroundColor='#E67E22'; this.style.borderColor='#E67E22';" 
-                            onmouseout="this.style.backgroundColor='#F39C12'; this.style.borderColor='#F39C12';">
-                            Edit
-                            </a>
-
-                            <form action="{% url 'deletedata' hd.id %}"   class="delete-form" method="post" class="d-inline"
-                                onsubmit="return confirm('Are you sure you want to delete this item?');">
-                                {% csrf_token %}
-                                <input type="submit" class="btn btn-danger btn-sm" value="Delete"
-                                    style="background-color: #E74C3C; border-color: #E74C3C; color: white;"
-                                    onmouseover="this.style.backgroundColor='#C0392B'; this.style.borderColor='#C0392B';"
-                                    onmouseout="this.style.backgroundColor='#E74C3C'; this.style.borderColor='#E74C3C';">
-                            </form>
+                            <div style="display: flex; gap: 5px;">
+                                <a href="{% url 'updatedata' hd.id %}" class="btn btn-warning btn-sm" 
+                                    style="background-color: #1c8456; border-color: #1c8456; color: white; width: 100px; text-align: center;"
+                                    onmouseover="this.style.backgroundColor='#E67E22'; this.style.borderColor='#E67E22';" 
+                                    onmouseout="this.style.backgroundColor='#1c8456'; this.style.borderColor='#1c8456';">
+                                    Edit
+                                </a>
+                            
+                                <form action="{% url 'deletedata' hd.id %}" class="delete-form" method="post"
+                                    onsubmit="return confirm('Are you sure you want to delete this item?');" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <input type="submit" class="btn btn-danger btn-sm" value="Delete"
+                                        style="background-color: #E74C3C; border-color: #E74C3C; color: white; width: 100px; text-align: center;" 
+                                        onmouseover="this.style.backgroundColor='#C0392B'; this.style.borderColor='#C0392B';"
+                                        onmouseout="this.style.backgroundColor='#E74C3C'; this.style.borderColor='#E74C3C';">
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     <tr>
