@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect , HttpResponse
-from .forms import Hod_Registration
+from .forms import Travel_Registration
 from django.db import IntegrityError 
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import User
@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 # def add_show(request):
 #     if request.method == 'POST':
 #         print(request.POST)
-#         fm = Hod_Registration(request.POST)
+#         fm = Travel_Registration(request.POST)
 #         if fm.is_valid():
 #             nm = fm.cleaned_data['name']
 #             em = fm.cleaned_data['email']
@@ -21,7 +21,7 @@ from django.contrib.auth.decorators import login_required
 #             reg.save()
 #             return redirect('/')  
 #     else:
-#         fm = Hod_Registration()
+#         fm = Travel_Registration()
 #     hods = User.objects.all()
 #     return render(request, 'add_user/addandshow.html', {'form': fm, 'hod': hods})
 
@@ -29,13 +29,12 @@ def add_show(request):
     if request.method == 'POST':
         print("Request POST Data:", request.POST)  # Debugging
 
-        fm = Hod_Registration(request.POST)
+        fm = Travel_Registration(request.POST)
         if fm.is_valid():
             nm = fm.cleaned_data['name']
             em = fm.cleaned_data['email']
             pw = fm.cleaned_data['password']
 
-            # Prevent empty or whitespace-only names
             if not nm.strip():
                 messages.error(request, "Name cannot be empty!")
             elif User.objects.filter(name=nm).exists():
@@ -56,7 +55,7 @@ def add_show(request):
                     messages.error(request, f"Unexpected error: {e}")
 
     else:
-        fm = Hod_Registration()
+        fm = Travel_Registration()
 
     hods = User.objects.all()
     return render(request, 'add_user/addandshow.html', {'form': fm, 'hod': hods})
@@ -66,12 +65,12 @@ def update_data(request, id):
     pi = get_object_or_404(User, pk=id)  
     
     if request.method == 'POST':
-        fm = Hod_Registration(request.POST, instance=pi)  
+        fm = Travel_Registration(request.POST, instance=pi)  
         if fm.is_valid():
             fm.save()
             return redirect('/')  
     else:
-        fm = Hod_Registration(instance=pi)  
+        fm = Travel_Registration(instance=pi)  
     
     return render(request, 'add_user/updateuser.html', {'form': fm})  
 
@@ -86,25 +85,120 @@ def delete_data(request, id):
             return redirect('/')
     
         return render(request, "add_user/confirm_delete.html", {'user': pi})
-
 def LoginPage(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        mobile_number = request.POST.get('mobile_number')
         password = request.POST.get('password')
-
-        user = authenticate(request, username=username, password=password)
-        # user = User.objects.all()
-        # print(user[3].username)
-        # return HttpResponse(user)
-
+        
+        # Here, we assume the mobile number is being used as the username.
+        user = authenticate(request, username=mobile_number, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')  # Redirect to home page if login is successful
+            return redirect('home')  # Redirect to your homepage or dashboard.
         else:
-            messages.error(request, "Username or password is incorrect!")
-
+            messages.error(request, 'Invalid mobile number or password.')
     return render(request, 'add_user/login.html')  # Correct template path
+#**********************************************************new **************************88
+# def SignupPage(request):
+#     if request.method == 'POST':
+#         print("DEBUG POST:", request.POST)
+#         # Get user details from the form.
+#         first_name = request.POST.get('first_name')
+#         last_name = request.POST.get('last_name')
+#         nationality = request.POST.get('nationality')
+#         city = request.POST.get('city')
+#         postal_address = request.POST.get('postal_address')
+#         mobile_number = request.POST.get('mobile_number')  # Use consistent variable name
+#         email = request.POST.get('email')
+#         password = request.POST.get('password')
+#         confirm_password = request.POST.get('confirm_password')
+#         travel_season = request.POST.get('travel_season')
+#         travel_type = request.POST.get('travel_type')
+#         age_range = request.POST.get('age_range')
+#         budget_range = request.POST.get('budget_range')
+#         captcha = request.POST.get('captcha')  # Captcha verification logic can be added here.
 
+#         # Basic validation.
+#         if password != confirm_password:
+#             messages.error(request, "Passwords do not match.")
+#             return render(request, 'signup.html')
+
+#         if User.objects.filter(username=mobile_number).exists():
+#             messages.error(request, "A user with this mobile number already exists.")
+#             return render(request, 'signup.html')
+
+#         # Create the user (using mobile_number as the username).
+#         user = User.objects.create_user(
+#             username=mobile_number,
+#             password=password,
+#             email=email,
+#             first_name=first_name,
+#             last_name=last_name
+#         )
+
+#         messages.success(request, "User created successfully. Please log in.")
+#         return redirect('login')  # Redirect to the login page after successful signup.
+    
+#     return render(request, 'add_user/signup.html')
+
+# def HomePage(request):
+#     return render(request, 'home.html')
+from django.shortcuts import render, redirect
+from django.contrib.auth import get_user_model
+from django.contrib import messages
+
+User = get_user_model()
+
+def SignupPage(request):
+    if request.method == 'POST':
+        print("DEBUG POST:", request.POST)
+
+        # Get user details from the form.
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        nationality = request.POST.get('nationality')
+        city = request.POST.get('city')
+        postal_address = request.POST.get('postal_address')
+        mobile_number = request.POST.get('mobile_number')  # Use consistent variable name
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        travel_season = request.POST.get('travel_season')
+        travel_type = request.POST.get('travel_type')
+        age_range = request.POST.get('age_range')
+        budget_range = request.POST.get('budget_range')
+
+        # Basic validation.
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return render(request, 'add_user/signup.html')
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "A user with this email already exists.")
+            return render(request, 'add_user/signup.html')
+
+        if User.objects.filter(username=mobile_number).exists():
+            messages.error(request, "A user with this mobile number already exists.")
+            return render(request, 'add_user/signup.html')
+
+        # Create the user (using mobile_number as the username).
+        user = User.objects.create_user(
+            username=mobile_number,
+            password=password,
+            email=email,
+            first_name=first_name,
+            last_name=last_name
+        )
+
+        messages.success(request, "User created successfully. Please log in.")
+        return redirect('login')  # Redirect to the login page after successful signup.
+    
+    return render(request, 'add_user/signup.html')
+
+# @staff_member_required
+# def custom_admin_dashboard(request):
+#     return render(request, 'admin/dashboard.html')
+# *********************************************************new **************************88
 #  Logout View
 @login_required
 def LogoutPage(request):
@@ -125,4 +219,3 @@ def users(request):
 def settings(request):
     return render(request, 'settings.html')  # Loads the settings page
  
-

@@ -21,7 +21,8 @@ from add_user import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.LoginPage, name='login'),  # Login page
+    path('login/', views.LoginPage, name='login'), 
+    path('', views.SignupPage, name='signup'),  # Login page
     path('home/', views.dashboard, name='home'),
     path('addandshow/', views.add_show, name="addandshow"),
     path('delete/<int:id>/', views.delete_data, name="deletedata"),

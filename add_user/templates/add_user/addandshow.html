@@ -3,7 +3,7 @@
  {% block content%} 
  <div class="row">
     <div class="col-lg-4">
-        <h4 class = "text-center alert alert-info"> Add new user </h4>
+        <h4 class = "text-center alert alert-info"> ADD NEW USERS </h4>
         <form action="" method ="POST" > 
          {% csrf_token %}
         {{ form.as_p }}
@@ -12,7 +12,7 @@
     </div>
 
      <div class="col-lg-8">
-        <h4 class = "text-center alert alert-info"> REGISTERED HOD'S INFO </h4>
+        <h4 class = "text-center alert alert-info"> REGISTERED TRAVELERS INFORMATION </h4>
         {% if hod %}
                 <table class="table">
                     <thead>
