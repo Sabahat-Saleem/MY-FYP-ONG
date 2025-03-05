@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from add_user import views
+from add_user import views 
 
 
 urlpatterns = [
@@ -27,4 +27,5 @@ urlpatterns = [
     path('addandshow/', views.add_show, name="addandshow"),
     path('delete/<int:id>/', views.delete_data, name="deletedata"),
     path('update/<int:id>/', views.update_data, name="updatedata"),
+    path('dashboard/', views.dashboard, name='dashboard_page'),
 ]
