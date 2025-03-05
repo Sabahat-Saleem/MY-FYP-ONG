@@ -6,24 +6,7 @@ from .models import User
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
-# this fucntion will add new item and show all items 
-# def add_show(request):
-#     if request.method == 'POST':
-#         print(request.POST)
-#         fm = Travel_Registration(request.POST)
-#         if fm.is_valid():
-#             nm = fm.cleaned_data['name']
-#             em = fm.cleaned_data['email']
-#             pw = fm.cleaned_data['password']
-
-#             reg = User(name=nm, email=em, password=pw)
-#             reg.save()
-#             return redirect('/')  
-#     else:
-#         fm = Travel_Registration()
-#     hods = User.objects.all()
-#     return render(request, 'add_user/addandshow.html', {'form': fm, 'hod': hods})
+from django.contrib.auth import get_user_model
 
 def add_show(request):
     if request.method == 'POST':
@@ -34,7 +17,7 @@ def add_show(request):
             nm = fm.cleaned_data['name']
             em = fm.cleaned_data['email']
             pw = fm.cleaned_data['password']
-
+            
             if not nm.strip():
                 messages.error(request, "Name cannot be empty!")
             elif User.objects.filter(name=nm).exists():
@@ -94,21 +77,25 @@ def LoginPage(request):
         user = authenticate(request, username=mobile_number, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')  # Redirect to your homepage or dashboard.
+            return redirect('dashboard')  # Redirect to your homepage or dashboard.
         else:
             messages.error(request, 'Invalid mobile number or password.')
     return render(request, 'add_user/login.html')  # Correct template path
-#**********************************************************new **************************88
+
+
+User = get_user_model()
+
 # def SignupPage(request):
 #     if request.method == 'POST':
 #         print("DEBUG POST:", request.POST)
+
 #         # Get user details from the form.
 #         first_name = request.POST.get('first_name')
 #         last_name = request.POST.get('last_name')
 #         nationality = request.POST.get('nationality')
 #         city = request.POST.get('city')
 #         postal_address = request.POST.get('postal_address')
-#         mobile_number = request.POST.get('mobile_number')  # Use consistent variable name
+#         mobile_number = request.POST.get('mobile_number').strip() # Use consistent variable name
 #         email = request.POST.get('email')
 #         password = request.POST.get('password')
 #         confirm_password = request.POST.get('confirm_password')
@@ -116,20 +103,24 @@ def LoginPage(request):
 #         travel_type = request.POST.get('travel_type')
 #         age_range = request.POST.get('age_range')
 #         budget_range = request.POST.get('budget_range')
-#         captcha = request.POST.get('captcha')  # Captcha verification logic can be added here.
-
+#         print(f"Submitted mobile number: '{mobile_number}'") 
 #         # Basic validation.
 #         if password != confirm_password:
 #             messages.error(request, "Passwords do not match.")
-#             return render(request, 'signup.html')
+#             return render(request, 'add_user/signup.html')
+
+#         if User.objects.filter(email=email).exists():
+#             messages.error(request, "A user with this email already exists.")
+#             return render(request, 'add_user/signup.html')
 
 #         if User.objects.filter(username=mobile_number).exists():
 #             messages.error(request, "A user with this mobile number already exists.")
-#             return render(request, 'signup.html')
+#             return render(request, 'add_user/signup.html')
+#         #  Check if a user with the given mobile number already exists
 
 #         # Create the user (using mobile_number as the username).
 #         user = User.objects.create_user(
-#             username=mobile_number,
+#             mobile_number=mobile_number, 
 #             password=password,
 #             email=email,
 #             first_name=first_name,
@@ -140,59 +131,43 @@ def LoginPage(request):
 #         return redirect('login')  # Redirect to the login page after successful signup.
     
 #     return render(request, 'add_user/signup.html')
-
-# def HomePage(request):
-#     return render(request, 'home.html')
-from django.shortcuts import render, redirect
-from django.contrib.auth import get_user_model
-from django.contrib import messages
-
-User = get_user_model()
-
 def SignupPage(request):
     if request.method == 'POST':
-        print("DEBUG POST:", request.POST)
-
-        # Get user details from the form.
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        nationality = request.POST.get('nationality')
-        city = request.POST.get('city')
-        postal_address = request.POST.get('postal_address')
-        mobile_number = request.POST.get('mobile_number')  # Use consistent variable name
-        email = request.POST.get('email')
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        mobile_number = request.POST.get('mobile_number', '').strip()
+        email = request.POST.get('email', '').strip()
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
-        travel_season = request.POST.get('travel_season')
-        travel_type = request.POST.get('travel_type')
-        age_range = request.POST.get('age_range')
-        budget_range = request.POST.get('budget_range')
 
-        # Basic validation.
+        # Check required fields
+        if not mobile_number:
+            messages.error(request, "Mobile number is required.")
+            return render(request, 'add_user/signup.html')
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
             return render(request, 'add_user/signup.html')
 
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "A user with this email already exists.")
-            return render(request, 'add_user/signup.html')
+        # Check if a user with this mobile number already exists
+        if User.objects.filter(mobile_number=mobile_number).exists():
+            messages.info(request, "An account with this mobile number already exists. Please log in instead.")
+            return redirect('login')  # Or render a page informing them to log in
 
-        if User.objects.filter(username=mobile_number).exists():
-            messages.error(request, "A user with this mobile number already exists.")
-            return render(request, 'add_user/signup.html')
-
-        # Create the user (using mobile_number as the username).
-        user = User.objects.create_user(
-            username=mobile_number,
-            password=password,
+        # If not, create a new user
+        try:
+            User.objects.create_user(
+            username="user_" + mobile_number,  # Auto-generate a username from mobile_number
+            mobile_number=mobile_number,
             email=email,
+            password=password,
             first_name=first_name,
             last_name=last_name
         )
-
-        messages.success(request, "User created successfully. Please log in.")
-        return redirect('login')  # Redirect to the login page after successful signup.
-    
+            messages.success(request, "User created successfully. Please log in.")
+            return redirect('login')
+        except Exception as e:
+            messages.error(request, f"Error: {e}")
+            return render(request, 'add_user/signup.html')
     return render(request, 'add_user/signup.html')
 
 # @staff_member_required
@@ -206,12 +181,18 @@ def LogoutPage(request):
     return redirect('/')  # Redirect to login page after logout
 
 # Home Page (Protected)
-@login_required
-def Home(request):
-    return render(request, 'home.html')  # Load home.html
+# @login_required
+# def Home(request):
+#     return render(request, 'home.html')  # Load home.html
 
+# def dashboard(request):
+#     return render(request, 'add_user/home.html')  # Loads the dashboard page
+ 
+@login_required
 def dashboard(request):
-    return render(request, 'add_user/home.html')  # Loads the dashboard page
+    users = User.objects.order_by('-date_joined')[:5]  # Get last 5 users
+    return render(request, 'add_user/dashboard.html', {'users': users})
+
 
 def users(request):
     return render(request, 'users.html')  # Loads the users page

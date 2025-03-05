@@ -1,0 +1,59 @@
+{% extends 'add_user/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Welcome to the Admin Dashboard, {{ user.first_name }}!</h2>
+
+    <!-- Quick Stats Section -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white p-3">
+                <h5>Total Bookings</h5>
+                <h3>12</h3>  <!-- Dynamic data can be inserted here -->
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white p-3">
+                <h5>Messages</h5>
+                <h3>5</h3>  <!-- Dynamic messages count -->
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-dark p-3">
+                <h5>Pending Requests</h5>
+                <h3>3</h3>  <!-- Dynamic pending requests -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Users Section -->
+    <div class="mt-5">
+        <h4>Recent Users</h4>
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Date Joined</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.date_joined|date:"Y-m-d" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No recent users</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}
