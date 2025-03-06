@@ -22,10 +22,10 @@ from add_user import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.LoginPage, name='login'), 
-    path('', views.SignupPage, name='signup'),  # Login page
-    path('home/', views.dashboard, name='home'),
+    path('', views.SignupPage, name='signup'),  
+    path('home/', views.Home, name='home'),
     path('addandshow/', views.add_show, name="addandshow"),
     path('delete/<int:id>/', views.delete_data, name="deletedata"),
     path('update/<int:id>/', views.update_data, name="updatedata"),
-    path('dashboard/', views.dashboard, name='dashboard_page'),
+    path('dashboard/', views.dashboard, name="dashboard_page"),
 ]

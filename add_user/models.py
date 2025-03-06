@@ -18,13 +18,16 @@ from django.contrib.auth.models import AbstractUser
 #         return self.name
 #************************************************
 class User(AbstractUser):
-    name = models.CharField(max_length=70, blank=False, null=False)  # Optional
+    first_name= models.CharField(max_length=70, blank=False, null=False)
+    last_name= models.CharField(max_length=70, blank=False, null=False)   # Optional
     email = models.EmailField(unique=True)  # Ensure email is unique
     mobile_number = models.CharField(max_length=15, unique=True) # blank for temproray 
 
+    def full_name(self):
+            return f"{self.first_name} {self.last_name}".strip()
 
     def __str__(self):
-        return self.name or "Unnamed User"
+        return self.full_name() or "Unnamed User"
 # ***********************************************************
 
 class Dashboard(models.Model):
