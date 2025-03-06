@@ -8,30 +8,68 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 
+# def add_show(request):
+#     if request.method == 'POST':
+#         print("Request POST Data:", request.POST)  # Debugging
+
+#         fm = Travel_Registration(request.POST)
+#         if fm.is_valid():
+#             nm = fm.cleaned_data['name']
+#             em = fm.cleaned_data['email']
+#             pw = fm.cleaned_data['password']
+            
+#             if not nm.strip():
+#                 messages.error(request, "Name cannot be empty!")
+#             elif User.objects.filter(name=nm).exists():
+#                 messages.error(request, "User with this name already exists!")
+#             elif User.objects.filter(email=em).exists():
+#                 messages.error(request, "User with this email already exists!")
+#             else:
+#                 try:
+#                     # Ensure user can log in
+#                     reg = User(name=nm, email=em, username=em,  is_staff=True)  #  have access to Django Admin
+#                     reg.set_password(pw) 
+#                     reg.save()
+#                     messages.success(request, "User added successfully!")
+#                     return redirect('/addandshow/')  
+#                 except IntegrityError:
+#                     messages.error(request, "Error: Duplicate entry detected.")
+#                 except Exception as e:
+#                     messages.error(request, f"Unexpected error: {e}")
+
+#     else:
+#         fm = Travel_Registration()
+
+#     hods = User.objects.all()
+#     return render(request, 'add_user/addandshow.html', {'form': fm, 'hod': hods})
+
+
 def add_show(request):
     if request.method == 'POST':
         print("Request POST Data:", request.POST)  # Debugging
 
         fm = Travel_Registration(request.POST)
         if fm.is_valid():
-            nm = fm.cleaned_data['name']
+            fn = fm.cleaned_data['first_name']
+            ln = fm.cleaned_data['last_name']
             em = fm.cleaned_data['email']
             pw = fm.cleaned_data['password']
-            
-            if not nm.strip():
-                messages.error(request, "Name cannot be empty!")
-            elif User.objects.filter(name=nm).exists():
+
+            full_name = f"{fn} {ln}".strip()
+
+            if not fn.strip() or not ln.strip():
+                messages.error(request, "First name and last name cannot be empty!")
+            elif User.objects.filter(first_name=fn, last_name=ln).exists():
                 messages.error(request, "User with this name already exists!")
             elif User.objects.filter(email=em).exists():
                 messages.error(request, "User with this email already exists!")
             else:
                 try:
-                    # Ensure user can log in
-                    reg = User(name=nm, email=em, username=em,  is_staff=True)  #  have access to Django Admin
-                    reg.set_password(pw) 
+                    reg = User(first_name=fn, last_name=ln, email=em, username=em, is_staff=True)  # Admin access
+                    reg.set_password(pw)
                     reg.save()
                     messages.success(request, "User added successfully!")
-                    return redirect('/addandshow/')  
+                    return redirect('/addandshow/')
                 except IntegrityError:
                     messages.error(request, "Error: Duplicate entry detected.")
                 except Exception as e:
@@ -40,10 +78,11 @@ def add_show(request):
     else:
         fm = Travel_Registration()
 
+    # Fetch users and combine their first and last names
     hods = User.objects.all()
-    return render(request, 'add_user/addandshow.html', {'form': fm, 'hod': hods})
+    users_with_full_names = [{'id': user.id, 'name': f"{user.first_name} {user.last_name}", 'email': user.email} for user in hods]
 
-
+    return render(request, 'add_user/addandshow.html', {'form': fm, 'hods': users_with_full_names})
 def update_data(request, id):
     pi = get_object_or_404(User, pk=id)  
     
@@ -74,10 +113,14 @@ def LoginPage(request):
         password = request.POST.get('password')
         
         # Here, we assume the mobile number is being used as the username.
-        user = authenticate(request, username=mobile_number, password=password)
+        try:
+            user = User.objects.get(mobile_number=mobile_number)
+            user = authenticate(request, username=user.username, password=password)
+        except User.DoesNotExist:
+                user = None
         if user is not None:
             login(request, user)
-            return redirect('dashboard')  # Redirect to your homepage or dashboard.
+            return redirect('dashboard_page')  # Redirect to your homepage or dashboard.
         else:
             messages.error(request, 'Invalid mobile number or password.')
     return render(request, 'add_user/login.html')  # Correct template path
@@ -178,12 +221,11 @@ def SignupPage(request):
 @login_required
 def LogoutPage(request):
     logout(request)
-    return redirect('/')  # Redirect to login page after logout
+    return redirect('login')  # Redirect to login page after logout
 
-# Home Page (Protected)
-# @login_required
-# def Home(request):
-#     return render(request, 'home.html')  # Load home.html
+
+def Home(request):
+    return render(request, 'add_user/home.html')  # Load home.html
 
 # def dashboard(request):
 #     return render(request, 'add_user/home.html')  # Loads the dashboard page
