@@ -28,4 +28,6 @@ urlpatterns = [
     path('delete/<int:id>/', views.delete_data, name="deletedata"),
     path('update/<int:id>/', views.update_data, name="updatedata"),
     path('dashboard/', views.dashboard, name="dashboard_page"),
+    path('update-profile/', views.update_profile, name='update_profile'),
+    path('logout/', views.user_logout, name='logout'),
 ]
