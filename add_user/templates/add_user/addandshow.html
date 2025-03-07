@@ -13,7 +13,7 @@
 
      <div class="col-lg-8">
         <h4 class = "text-center alert alert-info"> REGISTERED TRAVELERS INFORMATION </h4>
-        {% if hod %}
+        {% if hods %}
                 <table class="table">
                     <thead>
                     <tr>
@@ -25,7 +25,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                       {% for hd in hod %}
+                       {% for hd in hods %}
                     <tr>
                         <th scope="row">{{hd.id}}</th>
                         <td>{{hd.name}}</td> {# Now showing first_name + last_name #}

@@ -1,59 +1,71 @@
-{% extends 'add_user/base.html' %}
 
-{% block content %}
-<div class="container">
-    <h2>Welcome to the Admin Dashboard, {{ user.first_name }}!</h2>
-
-    <!-- Quick Stats Section -->
-    <div class="row mt-4">
-        <div class="col-md-4">
-            <div class="card bg-primary text-white p-3">
-                <h5>Total Bookings</h5>
-                <h3>12</h3>  <!-- Dynamic data can be inserted here -->
-            </div>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="{% static 'add_user/css/sidebardash.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.querySelector(".sidebar");
+            sidebar.classList.toggle("collapsed");
+            
+            var texts = document.querySelectorAll(".sidebar-text");
+            texts.forEach(text => text.classList.toggle("hidden"));
+        }
+    </script>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <button class="hamburger " style ="background: transparent; font-size: 24px; color: white; " onclick="toggleSidebar()">
+                <i class="fa fa-bars"></i>
+            </button>
+            <h2 class="sidebar-text">Online Tourist Guide </h2>
+            <ul>
+                <li><i class="fa fa-user"></i> <span class="sidebar-text">Profile</span></li>
+                <li><i class="fa fa-tasks"></i> <span class="sidebar-text">Activities</span></li>
+                <li><i class="fa fa-bell"></i> <span class="sidebar-text">Notifications</span></li>
+                <li>
+                    <a href="{% url 'logout' %}" class="logout" 
+                       onclick="confirmLogout(event)" 
+                       style="color: white; text-decoration: none; list-style: none;">
+                       <i class="fa fa-sign-out"></i> 
+                       <span class="sidebar-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
         </div>
-        <div class="col-md-4">
-            <div class="card bg-success text-white p-3">
-                <h5>Messages</h5>
-                <h3>5</h3>  <!-- Dynamic messages count -->
+        <div class="main-content">
+            <div class="profile-card">
+                <img src="{% static 'add_user/images/user.jpg' %}" alt="User Profile" class="profile-pic">
+                <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+                <p>Email: {{ user.email }}</p>
+                <button class="edit-btn">Edit Profile</button>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card bg-warning text-dark p-3">
-                <h5>Pending Requests</h5>
-                <h3>3</h3>  <!-- Dynamic pending requests -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Users Section -->
-    <div class="mt-5">
-        <h4>Recent Users</h4>
-        <table class="table table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Date Joined</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.first_name }} {{ user.last_name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.date_joined|date:"Y-m-d" }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center">No recent users</td>
-                </tr>
+            <div class="updates">
+                <h3>Latest Updates</h3>
+                {% for update in updates %}
+                    <p>📢 {{ update }}</p>
                 {% endfor %}
-            </tbody>
-        </table>
+            </div>
+        </div>
     </div>
-
-</div>
-{% endblock %}
+</body>
+<script>
+    function confirmLogout(event) {
+        event.preventDefault(); // Prevent immediate navigation
+        let logoutUrl = event.currentTarget.href;
+        if (confirm("Are you sure you want to logout?")) {
+            window.location.href = logoutUrl;
+        }
+    }
+</script>
+</html>

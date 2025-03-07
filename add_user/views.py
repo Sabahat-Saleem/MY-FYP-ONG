@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect , HttpResponse
 from .forms import Travel_Registration
+from .forms import UserUpdateForm
 from django.db import IntegrityError 
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import User
@@ -7,42 +8,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-
-# def add_show(request):
-#     if request.method == 'POST':
-#         print("Request POST Data:", request.POST)  # Debugging
-
-#         fm = Travel_Registration(request.POST)
-#         if fm.is_valid():
-#             nm = fm.cleaned_data['name']
-#             em = fm.cleaned_data['email']
-#             pw = fm.cleaned_data['password']
-            
-#             if not nm.strip():
-#                 messages.error(request, "Name cannot be empty!")
-#             elif User.objects.filter(name=nm).exists():
-#                 messages.error(request, "User with this name already exists!")
-#             elif User.objects.filter(email=em).exists():
-#                 messages.error(request, "User with this email already exists!")
-#             else:
-#                 try:
-#                     # Ensure user can log in
-#                     reg = User(name=nm, email=em, username=em,  is_staff=True)  #  have access to Django Admin
-#                     reg.set_password(pw) 
-#                     reg.save()
-#                     messages.success(request, "User added successfully!")
-#                     return redirect('/addandshow/')  
-#                 except IntegrityError:
-#                     messages.error(request, "Error: Duplicate entry detected.")
-#                 except Exception as e:
-#                     messages.error(request, f"Unexpected error: {e}")
-
-#     else:
-#         fm = Travel_Registration()
-
-#     hods = User.objects.all()
-#     return render(request, 'add_user/addandshow.html', {'form': fm, 'hod': hods})
-
+from django.contrib.auth import logout
 
 def add_show(request):
     if request.method == 'POST':
@@ -128,52 +94,7 @@ def LoginPage(request):
 
 User = get_user_model()
 
-# def SignupPage(request):
-#     if request.method == 'POST':
-#         print("DEBUG POST:", request.POST)
 
-#         # Get user details from the form.
-#         first_name = request.POST.get('first_name')
-#         last_name = request.POST.get('last_name')
-#         nationality = request.POST.get('nationality')
-#         city = request.POST.get('city')
-#         postal_address = request.POST.get('postal_address')
-#         mobile_number = request.POST.get('mobile_number').strip() # Use consistent variable name
-#         email = request.POST.get('email')
-#         password = request.POST.get('password')
-#         confirm_password = request.POST.get('confirm_password')
-#         travel_season = request.POST.get('travel_season')
-#         travel_type = request.POST.get('travel_type')
-#         age_range = request.POST.get('age_range')
-#         budget_range = request.POST.get('budget_range')
-#         print(f"Submitted mobile number: '{mobile_number}'") 
-#         # Basic validation.
-#         if password != confirm_password:
-#             messages.error(request, "Passwords do not match.")
-#             return render(request, 'add_user/signup.html')
-
-#         if User.objects.filter(email=email).exists():
-#             messages.error(request, "A user with this email already exists.")
-#             return render(request, 'add_user/signup.html')
-
-#         if User.objects.filter(username=mobile_number).exists():
-#             messages.error(request, "A user with this mobile number already exists.")
-#             return render(request, 'add_user/signup.html')
-#         #  Check if a user with the given mobile number already exists
-
-#         # Create the user (using mobile_number as the username).
-#         user = User.objects.create_user(
-#             mobile_number=mobile_number, 
-#             password=password,
-#             email=email,
-#             first_name=first_name,
-#             last_name=last_name
-#         )
-
-#         messages.success(request, "User created successfully. Please log in.")
-#         return redirect('login')  # Redirect to the login page after successful signup.
-    
-#     return render(request, 'add_user/signup.html')
 def SignupPage(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name', '').strip()
@@ -213,13 +134,9 @@ def SignupPage(request):
             return render(request, 'add_user/signup.html')
     return render(request, 'add_user/signup.html')
 
-# @staff_member_required
-# def custom_admin_dashboard(request):
-#     return render(request, 'admin/dashboard.html')
-# *********************************************************new **************************88
+
 #  Logout View
-@login_required
-def LogoutPage(request):
+def user_logout(request):
     logout(request)
     return redirect('login')  # Redirect to login page after logout
 
@@ -227,14 +144,32 @@ def LogoutPage(request):
 def Home(request):
     return render(request, 'add_user/home.html')  # Load home.html
 
-# def dashboard(request):
-#     return render(request, 'add_user/home.html')  # Loads the dashboard page
  
+# @login_required
+# def dashboard(request):
+#     users = User.objects.order_by('-date_joined')[:5]  # Get last 5 users
+#     return render(request, 'add_user/dashboard.html', {'users': users})
 @login_required
 def dashboard(request):
-    users = User.objects.order_by('-date_joined')[:5]  # Get last 5 users
-    return render(request, 'add_user/dashboard.html', {'users': users})
+    user = request.user  # Get logged-in user info
+    updates = [
+        "🔔 Hiking event on March 15th - Register now!",
+        "🏨 20% discount on hotel bookings this weekend!"
+    ]
 
+    return render(request, 'add_user/dashboard.html', {'user': user, 'updates': updates})
+@login_required
+def update_profile(request):
+    if request.method == "POST":
+        form = UserUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('dashboard')
+    else:
+        form = UserUpdateForm(instance=request.user)
+
+    return render(request, 'update_profile.html', {'form': form})
 
 def users(request):
     return render(request, 'users.html')  # Loads the users page
