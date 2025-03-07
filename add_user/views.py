@@ -146,9 +146,6 @@ def Home(request):
 
  
 # @login_required
-# def dashboard(request):
-#     users = User.objects.order_by('-date_joined')[:5]  # Get last 5 users
-#     return render(request, 'add_user/dashboard.html', {'users': users})
 @login_required
 def dashboard(request):
     user = request.user  # Get logged-in user info

@@ -122,7 +122,7 @@ body, html {
 
     .sidebar h2 .sidebar .sidebar-text {
         display: none;
-        font-size: 10px;
+    }
 
     .sidebar ul li {
         justify-content: center;
@@ -135,5 +135,4 @@ body, html {
     .main-content {
         margin-left: 60px;
     }
-}
 }
