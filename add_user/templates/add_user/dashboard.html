@@ -33,6 +33,9 @@
                 <li><i class="fa fa-user"></i> <span class="sidebar-text">Profile</span></li>
                 <li><i class="fa fa-tasks"></i> <span class="sidebar-text">Activities</span></li>
                 <li><i class="fa fa-bell"></i> <span class="sidebar-text">Notifications</span></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}"><i class="far fa-calendar-alt"></i>Tips Detail</a>
+                </li>
                 <li>
                     <a href="{% url 'logout' %}" class="logout" 
                        onclick="confirmLogout(event)" 
