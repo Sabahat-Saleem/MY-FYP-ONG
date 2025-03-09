@@ -150,8 +150,8 @@ def Home(request):
 def dashboard(request):
     user = request.user  # Get logged-in user info
     updates = [
-        "🔔 Hiking event on March 15th - Register now!",
-        "🏨 20% discount on hotel bookings this weekend!"
+        "Hiking event on March 15th - Register now!",
+        " 20% discount on hotel bookings this weekend!"
     ]
 
     return render(request, 'add_user/dashboard.html', {'user': user, 'updates': updates})
