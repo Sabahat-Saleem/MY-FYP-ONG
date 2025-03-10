@@ -113,6 +113,10 @@ body, html {
     background: #ECF0F1;
     border-radius: 5px;
 }
+.nav-item .nav-link {
+    text-decoration: none;
+    color: white;
+}
 
 /* Responsive Design */
 @media screen and (max-width: 768px) {
