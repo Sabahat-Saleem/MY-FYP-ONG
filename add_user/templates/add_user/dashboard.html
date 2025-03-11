@@ -7,15 +7,7 @@
     <title>User Dashboard</title>
     <link rel="stylesheet" href="{% static 'add_user/css/sidebardash.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script>
-        function toggleSidebar() {
-            var sidebar = document.querySelector(".sidebar");
-            sidebar.classList.toggle("collapsed");
-            
-            var texts = document.querySelectorAll(".sidebar-text");
-            texts.forEach(text => text.classList.toggle("hidden"));
-        }
-    </script>
+    
     <style>
         .hidden {
             display: none;
@@ -30,8 +22,11 @@
             </button>
             <h2 class="sidebar-text">Online Tourist Guide </h2>
             <ul>
-                <li class="nav-item" >
-                    <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-home" ></i>Home</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">
+                        <i class="fa fa-home"></i>
+                        <span class="sidebar-text">Home</span>
+                    </a>
                 </li>
                 <li><i class="fa fa-user"></i> <span class="sidebar-text">Profile</span></li>
                 <li><i class="fa fa-tasks"></i> <span class="sidebar-text">Activities</span></li>
@@ -63,6 +58,13 @@
     </div>
 </body>
 <script>
+    function toggleSidebar() {
+        var sidebar = document.querySelector(".sidebar");
+        sidebar.classList.toggle("collapsed");
+        
+        var texts = document.querySelectorAll(".sidebar-text");
+        texts.forEach(text => text.classList.toggle("hidden"));
+    }
     function confirmLogout(event) {
         event.preventDefault(); // Prevent immediate navigation
         let logoutUrl = event.currentTarget.href;

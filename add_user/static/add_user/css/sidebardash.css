@@ -117,6 +117,48 @@ body, html {
     text-decoration: none;
     color: white;
 }
+/* Dashboard Nav Item */
+.nav-item {
+    list-style: none;
+    padding: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.nav-item .nav-link {
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    transition: background 0.3s ease-in-out;
+}
+
+.nav-item .nav-link i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+/* Hover Effect */
+.nav-item .nav-link:hover {
+    background-color: #34495E;
+    border-radius: 5px;
+}
+
+/* Hide Dashboard Text When Sidebar is Collapsed */
+.sidebar.collapsed .nav-item .nav-link span {
+    display: none;
+}
+
+/* Align Icon in Collapsed Sidebar */
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+}
+
+.sidebar.collapsed .nav-item .nav-link i {
+    margin-right: 0;
+}
 
 /* Responsive Design */
 @media screen and (max-width: 768px) {
