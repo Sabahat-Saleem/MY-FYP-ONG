@@ -175,6 +175,7 @@ i {
     border-radius: 5px;
 }
 .video-container {
+	margin-top: 5px;
     width: 100vw;  /* Full width */
     height: 50vh;  /* Half screen height */
     display: flex;
