@@ -1,10 +1,10 @@
 <body><div class="area"></div><nav class="main-menu">
   <ul>
       <li>
-          <a href="https://www.google.com/404">
+          <a href="{% url 'home' %}">
               <i class="fa fa-home fa-2x"></i>
               <span class="nav-text" style = "color: white;">
-                Online Tourist Guide
+                Home
             </a>        
       </li>
       <hr>
@@ -12,16 +12,25 @@
           <a href="#">
               <i class="fa fa-user fa-2x"></i>
               <span class="nav-text" style = "color: white;">
-                  User
+                  User / Profiles
               </span>
           </a>    
-      </li>
-      <hr>
+        </li>
+        <hr>
       <li class="has-subnav">
           <a href="#">
              <i class="fa fa-envelope fa-2x"></i>
               <span class="nav-text" style = "color: white;">
-                  Address
+                  Preference 
+              </span>
+          </a>
+        </li>
+        <hr>
+      <li class="has-subnav">
+          <a href="#">
+             <i class="fa fa-tasks fa-2x"></i>
+              <span class="nav-text" style = "color: white;">
+                  Details Of Activity 
               </span>
           </a>
         </li>

@@ -166,14 +166,6 @@ i {
 	}
 }
 /* home CSS ************************************************************************************** */
-.full-width-image {
-    width: 90%; /* Default width */
-    height: auto; /* Maintain aspect ratio */
-    max-height: 10vh; /* Prevent excessive height */
-    display: block;
-    margin: 5px auto; /* Center the image */
-    border-radius: 5px;
-}
 .video-container {
 	margin-top: 5px;
     width: 100vw;  /* Full width */

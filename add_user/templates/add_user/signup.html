@@ -1,185 +1,7 @@
 {% extends "add_user/auth_base.html" %}
-{% comment %} <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign-Up Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f8f8f8;
-            height: 100%;
-            overflow: auto; 
-        }
-
-        .form-container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 4px 4px 2px 4px rgba(46,112,136,255);
-            padding: 30px;
-            width: 800px;
-            border: 1px solid rgba(46,112,136);
-            max-height: none; /* Removes height restriction */
-            overflow: visible; /* Ensures content is visible */
-        }
-
-        .form-container h2 {
-            text-align: center;
-            color: black;
-        }
-
-        .form-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px; /* Increased spacing between fields */
-            margin-bottom: 15px; /* Margin below each field */
-        }
-
-        .form-group label {
-            font-size: 14px;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px; /* Space between label and input */
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cccccc;
-            border-radius: 5px;
-            font-size: 14px;
-            margin-bottom: 10px; /* Adds vertical spacing between inputs */
-        }
-
-        .full-width {
-            grid-column: span 2;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        button {
-            width: 48%;
-            padding: 10px;
-            background: linear-gradient(135deg, #2e7088, rgb(141, 212, 238));
-            color: black;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: linear-gradient(135deg, #8DD4EE, #2e7088);
-        }
-    </style>
-</head>
-<body>
-    <div class="form-container">
-        <form action="" method="post">
-            <h2>Sign Up </h2>
-            {% csrf_token %}
-
-            <div class="form-group">
-                <div>
-                    <label for="first_name">First Name: </label>
-                    <input type="text" id="first_name" name="first_name" required>
-                </div>
-
-                <div>
-                    <label for="last_name">Last Name:</label>
-                    <input type="text" id="last_name" name="last_name" required>
-                </div>
-
-                <div>
-                    <label for="nationality">Nationality:</label>
-                    <input type="text" id="nationality" name="nationality" required>
-                </div>
-
-                <div>
-                    <label for="city">City:</label>
-                    <input type="text" id="city" name="city" required>
-                </div>
-
-                <div>
-                    <label for="postal_address">Postal Address:</label>
-                    <input type="text" id="postal_address" name="postal_address" required>
-                </div>
-
-                <div>
-                    <label for="Mobile_number">Mobile No.:</label>
-                    <input type="tel" id="mobile_number" name="mobile_number" required>
-                </div>
-
-                <div>
-                    <label for="email">Email Address:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-
-                <div>
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-
-                <div>
-                    <label for="confirm_password">Confirm Password:</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required>
-                </div>
-            </div>
-
-            <h3>Personal Preferences</h3>
-            
-            <div class="form-group">
-                <div>
-                    <label for="travel_season">Preferred Travel Season:</label>
-                    <input type="text" id="travel_season" name="travel_season">
-                </div>
-
-                <div>
-                    <label for="travel_type">Preferred Travel Type:</label>
-                    <input type="text" id="travel_type" name="travel_type">
-                </div>
-
-                <div>
-                    <label for="age_range">Age Range:</label>
-                    <input type="text" id="age_range" name="age_range">
-                </div>
-
-                <div>
-                    <label for="budget_range">Budget Range:</label>
-                    <input type="text" id="budget_range" name="budget_range">
-                </div>
-
-                <div class="full-width">
-                    <label for="captcha">Captcha Verification:</label>
-                    <input type="text" id="captcha" name="captcha" required>
-                </div>
-            </div>
-
-            <div class="buttons">
-                <button type="reset">Reset</button>
-                <button type="submit">Submit</button>
-            </div>
-        </form>
-    </div>
-</body>
-</html> {% endcomment %}
-
-
 {% block css %}
 <style>  
-    .form-container {
+    {% comment %} .form-container {
         background-color: white;
         border-radius: 10px;
         box-shadow: 4px 4px 2px 4px rgba(46,112,136,255);
@@ -194,6 +16,11 @@
     .form-container h2 {
         text-align: center;
         color: black;
+    }
+    .form-container h5 {
+        text-align: center;
+        color: black;
+        margin-bottom: 20px;
     }
 
     .form-group {
@@ -243,99 +70,87 @@
 
     button:hover {
         background: linear-gradient(135deg, #8DD4EE, #2e7088);
-    }
+    } {% endcomment %}
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 4px 4px 2px 4px rgba(46,112,136,255);
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            border: 1px solid rgba(46,112,136);
+            overflow: hidden;
+            margin: auto;
+        }
+        .form-container h2, .form-container h5 {
+            text-align: center;
+            color: black;
+        }
+        .form-container h5 {
+            text-align: center;
+            color: black;
+            margin: 20px 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .form-group > div {
+            flex: 1;
+            min-width: 250px;
+        }
+        .form-group label {
+            font-size: 14px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            flex: 1;
+            padding: 10px;
+            background: linear-gradient(135deg, #2e7088, rgb(141, 212, 238));
+            color: black;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #8DD4EE, #2e7088);
+        }
+        @media (max-width: 768px) {
+            .buttons {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+        }
 </style>
 {% endblock css %}
-
-{% comment %} {% block content %}
-<div class="form-container">
-    <form action="" method="post">
-        <h2>Sign Up</h2>
-        {% csrf_token %}
-
-        <div class="form-group">
-            <div>
-                <label for="first_name">First Name: </label>
-                <input type="text" id="first_name" name="first_name" required>
-            </div>
-
-            <div>
-                <label for="last_name">Last Name:</label>
-                <input type="text" id="last_name" name="last_name" required>
-            </div>
-
-            <div>
-                <label for="nationality">Nationality:</label>
-                <input type="text" id="nationality" name="nationality" required>
-            </div>
-
-            <div>
-                <label for="city">City:</label>
-                <input type="text" id="city" name="city" required>
-            </div>
-
-            <div>
-                <label for="postal_address">Postal Address:</label>
-                <input type="text" id="postal_address" name="postal_address" required>
-            </div>
-
-            <div>
-                <label for="mobile_number">Mobile No.:</label>
-                <input type="tel" id="mobile_number" name="mobile_number" required>
-            </div>
-
-            <div>
-                <label for="email">Email Address:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-
-            <div>
-                <label for="confirm_password">Confirm Password:</label>
-                <input type="password" id="confirm_password" name="confirm_password" required>
-            </div>
-        </div>
-
-        <h3>Personal Preferences</h3>
-
-        <div class="form-group">
-            <div>
-                <label for="travel_season">Preferred Travel Season:</label>
-                <input type="text" id="travel_season" name="travel_season">
-            </div>
-
-            <div>
-                <label for="travel_type">Preferred Travel Type:</label>
-                <input type="text" id="travel_type" name="travel_type">
-            </div>
-
-            <div>
-                <label for="age_range">Age Range:</label>
-                <input type="text" id="age_range" name="age_range">
-            </div>
-
-            <div>
-                <label for="budget_range">Budget Range:</label>
-                <input type="text" id="budget_range" name="budget_range">
-            </div>
-
-            <div class="full-width">
-                <label for="captcha">Captcha Verification:</label>
-                <input type="text" id="captcha" name="captcha" required>
-            </div>
-        </div>
-
-        <div class="buttons">
-            <button type="reset">Reset</button>
-            <button type="submit">Submit</button>
-        </div>
-    </form>
-</div>
-{% endblock content %} {% endcomment %}
 
 {% block title %}Sign Up{% endblock %}
 
@@ -391,7 +206,7 @@
             </div>
         </div>
 
-        <h3>Personal Preferences</h3>
+        <h5>Personal Preferences</h5>
 
         <div class="form-group">
             <div>

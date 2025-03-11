@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth import logout
+from .models import Location, Event, TravelTip
 
 def add_show(request):
     if request.method == 'POST':
@@ -148,13 +149,32 @@ def Home(request):
 # @login_required
 @login_required
 def dashboard(request):
-    user = request.user  # Get logged-in user info
-    updates = [
-        "Hiking event on March 15th - Register now!",
-        " 20% discount on hotel bookings this weekend!"
+    suggested_locations = [
+        {"name": "Swiss Alps", "description": "Perfect for winter sports and scenic views."},
+        {"name": "Bali, Indonesia", "description": "A tropical paradise with beautiful beaches and temples."},
+        {"name": "Paris, France", "description": "A cultural hub with historical landmarks and fine dining."}
     ]
 
-    return render(request, 'add_user/dashboard.html', {'user': user, 'updates': updates})
+    # Sample upcoming events
+    suggested_events = [
+        {"title": "Hiking Adventure in the Rockies", "date": "March 20, 2025", "description": "Join an exciting hiking experience in the Rocky Mountains."},
+        {"title": "Cherry Blossom Festival, Japan", "date": "April 5, 2025", "description": "Enjoy the breathtaking cherry blossoms in full bloom."},
+        {"title": "Safari Experience in Kenya", "date": "June 10, 2025", "description": "Explore the wildlife and natural beauty of Africa."}
+    ]
+
+    # Sample travel tips
+    suggested_tips = [
+        {"title": "Packing Essentials", "content": "Always carry a power bank, first-aid kit, and travel adapter."},
+        {"title": "Budget Travel", "content": "Use public transport and book accommodations in advance for discounts."},
+        {"title": "Safety Tips", "content": "Keep digital copies of important documents and be aware of your surroundings."}
+    ]
+
+    return render(request, 'add_user/dashboard.html', {
+        "suggested_locations": suggested_locations,
+        "suggested_events": suggested_events,
+        "suggested_tips": suggested_tips
+    })
+
 @login_required
 def update_profile(request):
     if request.method == "POST":
