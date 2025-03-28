@@ -41,8 +41,8 @@
   <div class="video-container">
     <video autoplay loop muted >
         <source src="{% static 'videos/video2.mp4' %}" type="video/mp4">
-        <source src="{% static 'videos/video2.ogv' %}" type="video/ogv">
-        <source src="{% static 'videos/video2.webm' %}" type="video/webm">
+        {% comment %} <source src="{% static 'videos/video2.ogv' %}" type="video/ogv">
+        <source src="{% static 'videos/video2.webm' %}" type="video/webm"> {% endcomment %}
         Your browser does not support the video tag.
     </video>
 </div>
