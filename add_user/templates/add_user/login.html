@@ -94,10 +94,14 @@
     <form method="post" autocomplete = "off">
         <h2>Login</h2>
         {% csrf_token %}
-            <div class="form-group">
+                <div class="form-group">
+            <label for="identifier">Mobile Number / Username</label>
+            <input type="text" placeholder="Enter Mobile Number or Username" id="identifier" name="identifier" autocomplete="off" required>
+        </div>
+            {% comment %} <div class="form-group">
                 <label for="Mobile_number">Mobile Number</label>
                 <input type="tel" placeholder ="Enter Mobile number:" id="mobile_number" name="mobile_number" autocomplete = "off"  required>
-            </div>
+            </div> {% endcomment %}
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" placeholder ="Password:" id="password" name="password" autocomplete = "new-password" required>

@@ -74,26 +74,54 @@ def delete_data(request, id):
             return redirect('/')
     
         return render(request, "add_user/confirm_delete.html", {'user': pi})
+# def LoginPage(request):
+#     if request.method == 'POST':
+#         mobile_number = request.POST.get('mobile_number')
+#         password = request.POST.get('password')
+        
+#         # Here, we assume the mobile number is being used as the username.
+#         try:
+#             user = User.objects.get(mobile_number=mobile_number)
+#             user = authenticate(request, username=user.username, password=password)
+#         except User.DoesNotExist:
+#                 user = None
+#         if user is not None:
+#             login(request, user)
+#             return redirect('dashboard_page')  # Redirect to your homepage or dashboard.
+#         else:
+#             messages.error(request, 'Invalid mobile number or password.')
+#     return render(request, 'add_user/login.html')  # Correct template path
+
+
+# User = get_user_model()
 def LoginPage(request):
     if request.method == 'POST':
-        mobile_number = request.POST.get('mobile_number')
+        identifier = request.POST.get('identifier')  # Can be mobile number or username
         password = request.POST.get('password')
-        
-        # Here, we assume the mobile number is being used as the username.
+
+        user = None
+
+        # Check if input is a mobile number or a username
         try:
-            user = User.objects.get(mobile_number=mobile_number)
+            if identifier.isdigit():  # Assuming mobile numbers are numeric
+                user = User.objects.get(mobile_number=identifier)
+            else:
+                user = User.objects.get(username=identifier)
+            
             user = authenticate(request, username=user.username, password=password)
         except User.DoesNotExist:
-                user = None
+            user = None
+
         if user is not None:
             login(request, user)
-            return redirect('dashboard_page')  # Redirect to your homepage or dashboard.
+            if user.is_staff:  # Admin user
+                return redirect('/addandshow/')  # Redirect admin to admin page
+            else:
+                return redirect('dashboard_page')  # Redirect regular users to dashboard
         else:
-            messages.error(request, 'Invalid mobile number or password.')
-    return render(request, 'add_user/login.html')  # Correct template path
+            messages.error(request, 'Invalid credentials.')
 
-
-User = get_user_model()
+    return render(request, 'add_user/login.html')
 
 
 def SignupPage(request):
