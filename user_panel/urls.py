@@ -30,4 +30,5 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name="dashboard_page"),
     path('update-profile/', views.update_profile, name='update_profile'),
     path('logout/', views.user_logout, name='logout'),
+    path('search/', views.get_interest_info, name='search_interest'),
 ]

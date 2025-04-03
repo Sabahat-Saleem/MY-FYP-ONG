@@ -69,3 +69,13 @@ class Dashboard(models.Model):
 
     def __str__(self):
         return f"Dashboard for {self.user.username}"
+    
+
+class Interest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    topic = models.CharField(max_length=255)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.topic} - {self.user.username}"

@@ -10,6 +10,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth import logout
 from .models import Location, Event, TravelTip
+from .models import Interest
+from .forms import InterestSearchForm
 
 def add_show(request):
     if request.method == 'POST':
@@ -222,3 +224,19 @@ def users(request):
 def settings(request):
     return render(request, 'settings.html')  # Loads the settings page
  
+@login_required
+def get_interest_info(request):
+    form = InterestSearchForm()
+    results = None
+    message = ""
+
+    if request.method == "POST":
+        form = InterestSearchForm(request.POST)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Interest.objects.filter(topic__icontains=query)
+
+            if not results:
+                message = "No matching information found."
+
+    return render(request, 'interests/search.html', {'form': form, 'results': results, 'message': message})

@@ -23,3 +23,10 @@ class UserUpdateForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
+
+class InterestSearchForm(forms.Form):
+    query = forms.CharField(
+        max_length=255, 
+        required=True, 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Search for an interest...'})
+    )
