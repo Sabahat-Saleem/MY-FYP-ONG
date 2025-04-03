@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Search Information of Interest</h2>
+    <form method="POST" class="card p-4 shadow-sm">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.query }}
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    {% if message %}
+        <p class="text-danger mt-3">{{ message }}</p>
+    {% endif %}
+
+    {% if results %}
+        <h3 class="mt-4">Search Results</h3>
+        <ul class="list-group">
+            {% for item in results %}
+                <li class="list-group-item">
+                    <strong>{{ item.topic }}</strong>: {{ item.description }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}
