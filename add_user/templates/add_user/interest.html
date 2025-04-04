@@ -1,0 +1,71 @@
+{% extends 'add_user/home.html' %}
+{% load static %}
+{% block content %}
+<div class="container" style="background-color= red">
+    <h2>Find Your Interests</h2>
+
+    <!-- Search form for interests -->
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+
+    <!-- Display search results if available -->
+    {% if results %}
+        <h3>Search Results</h3>
+        <ul>
+            {% for item in results %}
+                <li>{{ item.topic }} - {{ item.description }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No interests found.</p>
+    {% endif %}
+
+    <!-- Display recommendations if available -->
+    {% if recommendations %}
+        <h3>Recommended for You</h3>
+        <ul>
+            {% for item in recommendations %}
+                <li>{{ item.topic }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+
+<!-- Input field for dynamic search suggestions -->
+<input type="text" id="interest-search" placeholder="Search for interests..." onkeyup="getSuggestions(this.value)" />
+
+<!-- Container for dynamic suggestions -->
+<ul id="suggestions-list"></ul>
+{% endblock %}
+
+<!-- JS code -->
+{% block javascript %}
+<script>
+    console.log("I am running");
+    function getSuggestions(query) {
+        if (query.length >= 3) {  // Start searching after the user types at least 3 characters
+            fetch(`/interest-suggestions/?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    const suggestionsList = document.getElementById('suggestions-list');
+                    suggestionsList.innerHTML = '';  // Clear previous suggestions
+
+                    // Display each suggestion
+                    data.suggestions.forEach(suggestion => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = suggestion;
+                        suggestionsList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching suggestions:', error));
+        }
+    }
+</script>
+{% endblock %}

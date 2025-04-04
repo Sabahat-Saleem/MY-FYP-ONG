@@ -25,8 +25,4 @@ class UserUpdateForm(forms.ModelForm):
         }
 
 class InterestSearchForm(forms.Form):
-    query = forms.CharField(
-        max_length=255, 
-        required=True, 
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Search for an interest...'})
-    )
+    query = forms.CharField(label="Search Interests", max_length=255)

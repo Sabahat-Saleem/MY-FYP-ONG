@@ -10,8 +10,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth import logout
 from .models import Location, Event, TravelTip
-from .models import Interest
+from .models import Interest, UserActivity
 from .forms import InterestSearchForm
+from django.http import JsonResponse
 
 def add_show(request):
     if request.method == 'POST':
@@ -76,25 +77,6 @@ def delete_data(request, id):
             return redirect('/')
     
         return render(request, "add_user/confirm_delete.html", {'user': pi})
-# def LoginPage(request):
-#     if request.method == 'POST':
-#         mobile_number = request.POST.get('mobile_number')
-#         password = request.POST.get('password')
-        
-#         # Here, we assume the mobile number is being used as the username.
-#         try:
-#             user = User.objects.get(mobile_number=mobile_number)
-#             user = authenticate(request, username=user.username, password=password)
-#         except User.DoesNotExist:
-#                 user = None
-#         if user is not None:
-#             login(request, user)
-#             return redirect('dashboard_page')  # Redirect to your homepage or dashboard.
-#         else:
-#             messages.error(request, 'Invalid mobile number or password.')
-#     return render(request, 'add_user/login.html')  # Correct template path
-
-
 # User = get_user_model()
 def LoginPage(request):
     if request.method == 'POST':
@@ -228,6 +210,7 @@ def settings(request):
 def get_interest_info(request):
     form = InterestSearchForm()
     results = None
+    recommendations = None
     message = ""
 
     if request.method == "POST":
@@ -236,7 +219,27 @@ def get_interest_info(request):
             query = form.cleaned_data['query']
             results = Interest.objects.filter(topic__icontains=query)
 
-            if not results:
+            if results.exists():
+                # Fetch recommendations based on past user interests
+                user_interests = UserActivity.objects.filter(user=request.user).values_list('interest', flat=True)
+                recommendations = Interest.objects.filter(id__in=user_interests).exclude(topic__icontains=query)[:5]
+            else:
                 message = "No matching information found."
 
-    return render(request, 'interests/search.html', {'form': form, 'results': results, 'message': message})
+    return render(request, 'add_user/interest.html', {
+        'form': form,
+        'results': results,
+        'recommendations': recommendations,
+        'message': message
+    })
+
+def interest_suggestions(request):
+    query = request.GET.get('query', '')  # Get the query string from the GET request
+    suggestions = []
+
+    if query:
+        # Search for interests that match the query (case-insensitive)
+        suggestions = Interest.objects.filter(topic__icontains=query).values_list('topic', flat=True)[:5]
+
+    # Return the results as a JSON response
+    return JsonResponse({'suggestions': list(suggestions)})
