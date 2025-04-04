@@ -72,10 +72,13 @@ class Dashboard(models.Model):
     
 
 class Interest(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     topic = models.CharField(max_length=255)
     description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.topic} - {self.user.username}"
+        return self.topic
+
+class UserActivity(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    interest = models.ForeignKey(Interest, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)

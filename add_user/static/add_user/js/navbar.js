@@ -39,7 +39,13 @@ $(".navbar-toggler").click(function(){
 	$(".navbar-collapse").slideToggle(300);
 	setTimeout(function(){ test(); });
 });
-
+$(document).ready(function () {
+	$(".navbar-toggler").click(function () {
+		setTimeout(function () {
+			$(".navbar-collapse").toggleClass("show");
+		}, 200);
+	});
+});
 
 
 // --------------add active class-on another-page move----------

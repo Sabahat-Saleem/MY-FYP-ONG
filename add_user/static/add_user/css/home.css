@@ -1,0 +1,57 @@
+.container {
+    width: 80%;
+    margin: 20px auto;
+    font-family: sans-serif;
+}
+
+h2, h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 70%;
+    margin-right: 10px;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+}
+
+li:last-child {
+    border-bottom: none;
+}
+
+#suggestions-list {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 70%;
+    margin-top: 5px;
+    padding: 5px;
+}
+
+#suggestions-list li {
+    background-color: #f9f9f9;
+}
