@@ -1,7 +1,7 @@
 {% extends 'add_user/home.html' %}
 {% load static %}
 {% block content %}
-<div class="container" style="background-color= red">
+<div class="container" style="background-color: red;">
     <h2>Find Your Interests</h2>
 
     <!-- Search form for interests -->
@@ -15,17 +15,15 @@
         <p>{{ message }}</p>
     {% endif %}
 
-    <!-- Display search results if available -->
-    {% if results %}
-        <h3>Search Results</h3>
-        <ul>
-            {% for item in results %}
-                <li>{{ item.topic }} - {{ item.description }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No interests found.</p>
-    {% endif %}
+   <!-- Container for Results -->
+   <div id="results-container">
+       {% include 'add_user/results.html' %}
+   </div>
+
+   <!-- Container for Recommendations -->
+   <div id="recommendations-container">
+       {% include 'add_user/recommendations.html' %}
+   </div>
 
     <!-- Display recommendations if available -->
     {% if recommendations %}
@@ -48,24 +46,42 @@
 <!-- JS code -->
 {% block javascript %}
 <script>
-    console.log("I am running");
-    function getSuggestions(query) {
-        if (query.length >= 3) {  // Start searching after the user types at least 3 characters
-            fetch(`/interest-suggestions/?query=${query}`)
-                .then(response => response.json())
-                .then(data => {
-                    const suggestionsList = document.getElementById('suggestions-list');
-                    suggestionsList.innerHTML = '';  // Clear previous suggestions
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("You idiot"); // Just for debugging
 
-                    // Display each suggestion
-                    data.suggestions.forEach(suggestion => {
-                        const listItem = document.createElement('li');
-                        listItem.textContent = suggestion;
-                        suggestionsList.appendChild(listItem);
-                    });
-                })
-                .catch(error => console.error('Error fetching suggestions:', error));
-        }
-    }
+    const form = document.querySelector("form");
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();  // Prevent full page reload
+
+        const formData = new FormData(form);
+
+        fetch("{% url 'get_interest_info' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": form.querySelector("[name=csrfmiddlewaretoken]").value,
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            body: formData
+        })
+        .then(response => response.json())  // Wait for JSON response
+        .then(data => {
+            // Debug: Check if the containers are found
+            const resultsContainer = document.getElementById("results-container");
+            const recommendationsContainer = document.getElementById("recommendations-container");
+
+            console.log("Results container:", resultsContainer);
+            console.log("Recommendations container:", recommendationsContainer);
+
+            if (resultsContainer && recommendationsContainer) {
+                resultsContainer.innerHTML = data.results_html;  // Update results
+                recommendationsContainer.innerHTML = data.recommendations_html;  // Update recommendations
+            } else {
+                console.error("One or both containers not found!");  // Log error if containers don't exist
+            }
+        })
+        .catch(error => console.error("Error:", error));  // Log any fetch errors
+    });
+});
 </script>
 {% endblock %}

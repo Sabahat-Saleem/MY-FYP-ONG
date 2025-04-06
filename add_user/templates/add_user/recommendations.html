@@ -1,0 +1,11 @@
+<div>Recommendations section works!</div>
+{% if recommendations %}
+    <h3>Recommended for You</h3>
+    <ul>
+        {% for item in recommendations %}
+            <li>{{ item.topic }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No recommendations yet.</p>
+{% endif %}

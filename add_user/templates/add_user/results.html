@@ -1,0 +1,17 @@
+{% block content%}
+<div>Results section works!</div>
+{% if message %}
+    <p>{{ message }}</p>
+{% endif %}
+
+{% if results %}
+    <h3>Search Results</h3>
+    <ul>
+        {% for item in results %}
+            <li>{{ item.topic }} - {{ item.description }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No interests found.</p>
+{% endif %}
+{% endblock %}
