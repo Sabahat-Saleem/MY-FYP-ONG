@@ -13,6 +13,7 @@ from .models import Location, Event, TravelTip
 from .models import Interest, UserActivity
 from .forms import InterestSearchForm
 from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 def add_show(request):
     if request.method == 'POST':
@@ -206,6 +207,7 @@ def users(request):
 def settings(request):
     return render(request, 'settings.html')  # Loads the settings page
  
+
 @login_required
 def get_interest_info(request):
     form = InterestSearchForm()
@@ -220,12 +222,21 @@ def get_interest_info(request):
             results = Interest.objects.filter(topic__icontains=query)
 
             if results.exists():
-                # Fetch recommendations based on past user interests
                 user_interests = UserActivity.objects.filter(user=request.user).values_list('interest', flat=True)
                 recommendations = Interest.objects.filter(id__in=user_interests).exclude(topic__icontains=query)[:5]
             else:
                 message = "No matching information found."
 
+            # ✅ If it's an AJAX request, return JSON
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                results_html = render_to_string('add_user/results.html', {'results': results})
+                recommendations_html = render_to_string('add_user/recommendations.html', {'recommendations': recommendations})
+                return JsonResponse({
+                    'results_html': results_html,
+                    'recommendations_html': recommendations_html
+                })
+
+    # ❗ For non-AJAX, render the full HTML page
     return render(request, 'add_user/interest.html', {
         'form': form,
         'results': results,
@@ -233,13 +244,11 @@ def get_interest_info(request):
         'message': message
     })
 
-def interest_suggestions(request):
-    query = request.GET.get('query', '')  # Get the query string from the GET request
-    suggestions = []
+def test_results_template(request):
+    results = Interest.objects.all()  # Get some test results or use a mock query
+    results_html = render_to_string('add_user/results.html', {'results': results})
+    return HttpResponse(results_html)
 
-    if query:
-        # Search for interests that match the query (case-insensitive)
-        suggestions = Interest.objects.filter(topic__icontains=query).values_list('topic', flat=True)[:5]
-
-    # Return the results as a JSON response
-    return JsonResponse({'suggestions': list(suggestions)})
+def test_recommendations_template(request):
+    recommendations = ["Mountain View", "Beach Paradise", "City Escape"]
+    return render(request, 'add_user/recommendations.html', {'recommendations': recommendations})
