@@ -14,6 +14,7 @@ from .models import Interest, UserActivity
 from .forms import InterestSearchForm
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
 
 def add_show(request):
     if request.method == 'POST':
@@ -210,40 +211,30 @@ def settings(request):
 
 @login_required
 def get_interest_info(request):
-    form = InterestSearchForm()
-    results = None
-    recommendations = None
-    message = ""
+    query = request.GET.get('query', '')
+    suggestions = Interest.objects.filter(name__icontains=query)[:5]  # Limit to 5 results
+    suggestion_list = [{'name': interest.name, 'category': interest.category} for interest in suggestions]
+    return JsonResponse({'suggestions': suggestion_list})
 
-    if request.method == "POST":
-        form = InterestSearchForm(request.POST)
-        if form.is_valid():
-            query = form.cleaned_data['query']
-            results = Interest.objects.filter(topic__icontains=query)
+def interest_page(request):
+    recommendations = get_recommendations()  # Function to fetch recommendations (could be based on user activity)
+    form = InterestSearchForm(request.POST or None)
+    message = None
 
-            if results.exists():
-                user_interests = UserActivity.objects.filter(user=request.user).values_list('interest', flat=True)
-                recommendations = Interest.objects.filter(id__in=user_interests).exclude(topic__icontains=query)[:5]
-            else:
-                message = "No matching information found."
+    if request.method == 'POST':
+        # Handle form submission logic (e.g., show results based on search criteria)
+        query = form.cleaned_data.get('query')
+        interests = Interest.objects.filter(name__icontains=query)
+        if interests.exists():
+            message = "Found matching interests!"
+        else:
+            message = "No matching interests found."
 
-            # ✅ If it's an AJAX request, return JSON
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                results_html = render_to_string('add_user/results.html', {'results': results})
-                recommendations_html = render_to_string('add_user/recommendations.html', {'recommendations': recommendations})
-                return JsonResponse({
-                    'results_html': results_html,
-                    'recommendations_html': recommendations_html
-                })
-
-    # ❗ For non-AJAX, render the full HTML page
     return render(request, 'add_user/interest.html', {
         'form': form,
-        'results': results,
+        'message': message,
         'recommendations': recommendations,
-        'message': message
     })
-
 def test_results_template(request):
     results = Interest.objects.all()  # Get some test results or use a mock query
     results_html = render_to_string('add_user/results.html', {'results': results})
@@ -252,3 +243,107 @@ def test_results_template(request):
 def test_recommendations_template(request):
     recommendations = ["Mountain View", "Beach Paradise", "City Escape"]
     return render(request, 'add_user/recommendations.html', {'recommendations': recommendations})
+
+# Sample data for recommendations
+def get_recommendations(query):
+    recommendations = {
+  "snow": [
+    "Murree",
+    "Naran Kaghan",
+    "Gilgit-Baltistan",
+    "Malam Jabba",
+    "Kaghan Valley",
+    "Azad Kashmir",
+    "Swat Valley",
+    "Ziarat",
+    "Khunjerab Pass"
+  ],
+  "greenery": [
+    "Islamabad",
+    "Murree",
+    "Fairy Meadows",
+    "Shogran",
+    "Hunza Valley",
+    "Naran Kaghan",
+    "Neelum Valley",
+    "Swat Valley",
+    "Kaghan Valley",
+    "Ratti Gali Lake"
+  ],
+  "mountains": [
+    "Hunza Valley",
+    "Gilgit-Baltistan",
+    "Murree",
+    "Kaghan Valley",
+    "Naltar Valley",
+    "Khunjerab Pass",
+    "Deosai National Park",
+    "Ratti Gali Lake",
+    "Babusar Pass"
+  ],
+  "lakes": [
+    "Saif ul Malook",
+    "Ratti Gali Lake",
+    "Attabad Lake",
+    "Shandur Lake",
+    "Keel Lake",
+    "Kund Malir",
+    "Kaghan Lake",
+    "Lulusar Lake",
+    "Naltar Lake",
+    "Attabad Lake"
+  ],
+  "waterfalls": [
+    "Dhani Waterfall (Faisalabad)",
+    "Malam Jabba Waterfalls",
+    "Toli Pir Waterfall (Rawalakot)",
+    "Dhani Waterfall (Neelum Valley)",
+    "Nuranang Waterfall (Kaghan Valley)",
+    "Manthoka Waterfall (Skardu)",
+    "Ratti Gali Waterfall",
+    "Torkham Waterfall (Khyber Pakhtunkhwa)",
+    "Banjosa Waterfall (Rawalakot)",
+    "Shounter Waterfall (Azad Kashmir)"
+  ],
+  "desert": [
+    "Thar Desert",
+    "Cholistan Desert",
+    "Kharan Desert",
+    "Dasht-e-Margo",
+    "Rohi Desert",
+    "Mekran Coast"
+  ],
+  "forests": [
+    "Changa Manga",
+    "Kaghan Valley",
+    "Balochistan Forests",
+    "Margalla Hills",
+    "Kashmir Forests",
+    "Shogran",
+    "Fairy Meadows",
+    "Neelum Valley"
+  ]
+}
+       
+    # Filter the recommendations based on the query
+    filtered_recommendations = {}
+    for category, places in recommendations.items():
+        filtered_places = [place for place in places if query.lower() in place.lower()]
+        if filtered_places:
+            filtered_recommendations[category] = filtered_places
+
+    return filtered_recommendations
+
+def interest_page(request):
+    recommendations = {}
+    if request.method == 'POST':
+        # Get the user input from the form
+        destination = request.POST.get('destination', '').strip()
+
+        # Fetch recommendations based on the user input
+        if destination:
+            recommendations = get_recommendations(destination)
+
+    return render(request, 'add_user/interest.html', {
+        'recommendations': recommendations,
+    })

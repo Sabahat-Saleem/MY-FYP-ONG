@@ -72,11 +72,11 @@ class Dashboard(models.Model):
     
 
 class Interest(models.Model):
-    topic = models.CharField(max_length=255)
-    description = models.TextField()
+    name = models.CharField(max_length=100, default="Unknown")
+    category = models.CharField(max_length=100, default="Uncategorized")
 
     def __str__(self):
-        return self.topic
+        return self.name
 
 class UserActivity(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
