@@ -1,87 +1,92 @@
 {% extends 'add_user/home.html' %}
 {% load static %}
-{% block content %}
-<div class="container" style="background-color: red;">
-    <h2>Find Your Interests</h2>
 
-    <!-- Search form for interests -->
-    <form method="POST">
+{% block content %}
+<div class="container">
+    <h2>Find Your Recommended Destinations</h2>
+
+    <!-- Search form for destinations -->
+    <form method="POST" id="interest-form">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Search</button>
+        <label for="destination">Enter Destination</label>
+        <input type="text" id="destination" name="destination" placeholder="e.g., Mountains, Lakes, etc." required onkeyup="getSuggestions(this.value)">
+        <button type="submit" id="submit-btn" style="display: none;">Get Recommendations</button>
     </form>
 
-    {% if message %}
-        <p>{{ message }}</p>
-    {% endif %}
-
-   <!-- Container for Results -->
-   <div id="results-container">
-       {% include 'add_user/results.html' %}
-   </div>
-
-   <!-- Container for Recommendations -->
-   <div id="recommendations-container">
-       {% include 'add_user/recommendations.html' %}
-   </div>
-
-    <!-- Display recommendations if available -->
     {% if recommendations %}
-        <h3>Recommended for You</h3>
+        <h3>Recommended Destinations:</h3>
         <ul>
-            {% for item in recommendations %}
-                <li>{{ item.topic }}</li>
+            {% for category, places in recommendations.items %}
+                <li>
+                    <strong>{{ category|title }}:</strong>
+                    <ul>
+                        {% for place in places %}
+                            <li>{{ place }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
             {% endfor %}
         </ul>
     {% endif %}
+
+    <!-- Container for dynamic search suggestions -->
+    <div id="suggestions-container" style="margin-top: 20px;">
+        <ul id="suggestions-list"></ul>
+    </div>
 </div>
-
-<!-- Input field for dynamic search suggestions -->
-<input type="text" id="interest-search" placeholder="Search for interests..." onkeyup="getSuggestions(this.value)" />
-
-<!-- Container for dynamic suggestions -->
-<ul id="suggestions-list"></ul>
 {% endblock %}
 
-<!-- JS code -->
 {% block javascript %}
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("You idiot"); // Just for debugging
+    function getSuggestions(query) {
+        if (query.length < 3) {
+            document.getElementById('suggestions-container').style.display = 'none';
+            return;
+        }
 
-    const form = document.querySelector("form");
+        // Fetch suggestions based on user input
+        fetch(`/interests/?query=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                const suggestionsContainer = document.getElementById('suggestions-list');
+                suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+                
+                // Show the suggestions container if suggestions are found
+                if (data.suggestions && data.suggestions.length > 0) {
+                    document.getElementById('suggestions-container').style.display = 'block';
+                    data.suggestions.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `${item.name} (${item.category})`;
+                        suggestionsContainer.appendChild(li);
+                    });
+                } else {
+                    document.getElementById('suggestions-container').style.display = 'none';
+                }
+            });
+    }
 
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();  // Prevent full page reload
+    // Form submission handling for fallback if needed
+    document.getElementById('interest-form').addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevent page reload
 
-        const formData = new FormData(form);
+        const query = document.getElementById('destination').value;
+        fetch(`/interests/?query=${query}`)  // Fetch recommendations when form is submitted
+            .then(response => response.json())
+            .then(data => {
+                const recommendationsContainer = document.getElementById('recommendations-container');
+                recommendationsContainer.innerHTML = ''; // Clear previous recommendations
 
-        fetch("{% url 'get_interest_info' %}", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": form.querySelector("[name=csrfmiddlewaretoken]").value,
-                "X-Requested-With": "XMLHttpRequest"
-            },
-            body: formData
-        })
-        .then(response => response.json())  // Wait for JSON response
-        .then(data => {
-            // Debug: Check if the containers are found
-            const resultsContainer = document.getElementById("results-container");
-            const recommendationsContainer = document.getElementById("recommendations-container");
-
-            console.log("Results container:", resultsContainer);
-            console.log("Recommendations container:", recommendationsContainer);
-
-            if (resultsContainer && recommendationsContainer) {
-                resultsContainer.innerHTML = data.results_html;  // Update results
-                recommendationsContainer.innerHTML = data.recommendations_html;  // Update recommendations
-            } else {
-                console.error("One or both containers not found!");  // Log error if containers don't exist
-            }
-        })
-        .catch(error => console.error("Error:", error));  // Log any fetch errors
+                if (data.suggestions && data.suggestions.length > 0) {
+                    let html = '<h3>Recommended Destinations:</h3><ul>';
+                    data.suggestions.forEach(item => {
+                        html += `<li>${item.name} (${item.category})</li>`;
+                    });
+                    html += '</ul>';
+                    recommendationsContainer.innerHTML = html;
+                } else {
+                    recommendationsContainer.innerHTML = '<p>No recommendations found.</p>';
+                }
+            });
     });
-});
 </script>
 {% endblock %}
