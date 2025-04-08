@@ -6,13 +6,22 @@
     <h2>Find Your Recommended Destinations</h2>
 
     <!-- Search form for destinations -->
-    <form method="POST" id="interest-form">
-        {% csrf_token %}
-        <label for="destination">Enter Destination</label>
-        <input type="text" id="destination" name="destination" placeholder="e.g., Mountains, Lakes, etc." required onkeyup="getSuggestions(this.value)">
-        <button type="submit" id="submit-btn" style="display: none;">Get Recommendations</button>
-    </form>
+   <!-- In the form, ensure that there's no conflict between the search suggestions and form submission -->
+<form method="POST" id="interest-form">
+    {% csrf_token %}
+    <label for="destination">Enter Destination</label>
+    <input type="text" id="destination" name="destination" placeholder="e.g., Mountains, Lakes, etc." required onkeyup="getSuggestions(this.value)">
+    <!-- Disabled submit button to prevent form submission during search -->
+    <button type="submit" id="submit-btn" style="display: none;" disabled>Get Recommendations</button>
+</form>
 
+<!-- Suggestions container -->
+<div id="suggestions-container" style="margin-top: 20px; display: none;">
+    <ul id="suggestions-list"></ul>
+</div>
+
+<!-- Recommendations container -->
+<div id="recommendations-container" style="margin-top: 20px;">
     {% if recommendations %}
         <h3>Recommended Destinations:</h3>
         <ul>
@@ -27,66 +36,55 @@
                 </li>
             {% endfor %}
         </ul>
+    {% else %}
+        <p>No recommendations found for your search.</p>
     {% endif %}
+</div>
 
-    <!-- Container for dynamic search suggestions -->
-    <div id="suggestions-container" style="margin-top: 20px;">
-        <ul id="suggestions-list"></ul>
-    </div>
+
 </div>
 {% endblock %}
 
 {% block javascript %}
 <script>
+    console.log("Hello Sabahat");
     function getSuggestions(query) {
-        if (query.length < 3) {
-            document.getElementById('suggestions-container').style.display = 'none';
+        console.log("I am in Sabahat");
+        const suggestionsContainer = document.getElementById('suggestions-container');
+        const suggestionsList = document.getElementById('suggestions-list');
+
+        if (!query || query.trim().length < 3) {
+            suggestionsList.innerHTML = '';
+            suggestionsContainer.style.display = 'none';
             return;
         }
 
-        // Fetch suggestions based on user input
-        fetch(`/interests/?query=${query}`)
+        fetch(`/interests/?query=${encodeURIComponent(query)}`)
             .then(response => response.json())
             .then(data => {
-                const suggestionsContainer = document.getElementById('suggestions-list');
-                suggestionsContainer.innerHTML = ''; // Clear previous suggestions
-                
-                // Show the suggestions container if suggestions are found
+                suggestionsList.innerHTML = '';
+
                 if (data.suggestions && data.suggestions.length > 0) {
-                    document.getElementById('suggestions-container').style.display = 'block';
+                    suggestionsContainer.style.display = 'block';
                     data.suggestions.forEach(item => {
                         const li = document.createElement('li');
                         li.textContent = `${item.name} (${item.category})`;
-                        suggestionsContainer.appendChild(li);
+                        suggestionsList.appendChild(li);
                     });
                 } else {
-                    document.getElementById('suggestions-container').style.display = 'none';
+                    suggestionsContainer.style.display = 'none';
                 }
+            })
+            .catch(error => {
+                console.error('Error fetching suggestions:', error);
             });
     }
 
-    // Form submission handling for fallback if needed
-    document.getElementById('interest-form').addEventListener('submit', function(event) {
-        event.preventDefault();  // Prevent page reload
-
-        const query = document.getElementById('destination').value;
-        fetch(`/interests/?query=${query}`)  // Fetch recommendations when form is submitted
-            .then(response => response.json())
-            .then(data => {
-                const recommendationsContainer = document.getElementById('recommendations-container');
-                recommendationsContainer.innerHTML = ''; // Clear previous recommendations
-
-                if (data.suggestions && data.suggestions.length > 0) {
-                    let html = '<h3>Recommended Destinations:</h3><ul>';
-                    data.suggestions.forEach(item => {
-                        html += `<li>${item.name} (${item.category})</li>`;
-                    });
-                    html += '</ul>';
-                    recommendationsContainer.innerHTML = html;
-                } else {
-                    recommendationsContainer.innerHTML = '<p>No recommendations found.</p>';
-                }
-            });
+    document.addEventListener("DOMContentLoaded", function () {
+        const input = document.getElementById("destination");
+        input.addEventListener("keyup", function () {
+            getSuggestions(input.value);
+        });
     });
 </script>
 {% endblock %}
