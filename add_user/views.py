@@ -211,27 +211,37 @@ def settings(request):
 
 @login_required
 def get_interest_info(request):
-    query = request.GET.get('query', '')
-    suggestions = Interest.objects.filter(name__icontains=query)[:5]  # Limit to 5 results
-    suggestion_list = [{'name': interest.name, 'category': interest.category} for interest in suggestions]
-    return JsonResponse({'suggestions': suggestion_list})
+    query = request.GET.get('query', '').strip()
+    if query:
+        interests = Interest.objects.filter(name__icontains=query)
+    else:
+        interests = Interest.objects.all()
 
+    suggestions = [
+        {'name': interest.name, 'category': interest.category.name}
+        for interest in interests
+    ]
+    return JsonResponse({'suggestions': suggestions})
+
+@login_required
 def interest_page(request):
-    recommendations = get_recommendations()  # Function to fetch recommendations (could be based on user activity)
-    form = InterestSearchForm(request.POST or None)
+    recommendations = []
     message = None
 
     if request.method == 'POST':
-        # Handle form submission logic (e.g., show results based on search criteria)
-        query = form.cleaned_data.get('query')
-        interests = Interest.objects.filter(name__icontains=query)
-        if interests.exists():
-            message = "Found matching interests!"
-        else:
-            message = "No matching interests found."
+        # Get the user input from the form
+        destination = request.POST.get('destination', '').strip()
+
+        # Fetch recommendations based on the user input
+        if destination:
+            recommendations = get_recommendations(destination)  # Assuming this returns a dictionary of recommendations
+
+            if recommendations:
+                message = "Found recommendations for your destination!"
+            else:
+                message = "No recommendations found for this destination."
 
     return render(request, 'add_user/interest.html', {
-        'form': form,
         'message': message,
         'recommendations': recommendations,
     })
@@ -326,24 +336,16 @@ def get_recommendations(query):
 }
        
     # Filter the recommendations based on the query
+    query = query.lower().strip()
     filtered_recommendations = {}
+
     for category, places in recommendations.items():
-        filtered_places = [place for place in places if query.lower() in place.lower()]
-        if filtered_places:
-            filtered_recommendations[category] = filtered_places
+        if query in category:  # Match the category name
+            filtered_recommendations[category] = places
+        else:
+            # Also search inside places
+            matching_places = [place for place in places if query in place.lower()]
+            if matching_places:
+                filtered_recommendations[category] = matching_places
 
     return filtered_recommendations
-
-def interest_page(request):
-    recommendations = {}
-    if request.method == 'POST':
-        # Get the user input from the form
-        destination = request.POST.get('destination', '').strip()
-
-        # Fetch recommendations based on the user input
-        if destination:
-            recommendations = get_recommendations(destination)
-
-    return render(request, 'add_user/interest.html', {
-        'recommendations': recommendations,
-    })

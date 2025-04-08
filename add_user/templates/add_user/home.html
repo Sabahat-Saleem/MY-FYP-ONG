@@ -60,11 +60,23 @@
         Your browser does not support the video tag.
     </video>
 </div>
-<form method="POST" action="{% url 'interest' %}">
+{% comment %} <form method="POST" action="{% url 'interest' %}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Search Interests</button>
-</form>
+</form> {% endcomment %}
+  <div class="container">
+        <h2>Find Your Recommended Destinations</h2>
+        <!-- Include your form from interest.html here -->
+        <form method="POST" action="{% url 'interest' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="text" id="destination" name="destination" 
+       placeholder="e.g., Mountains, Lakes, etc." 
+       required onkeyup="console.log('Key pressed!'); getSuggestions(this.value)">
+            <button type="submit">Search Interests</button>
+        </form>
+    </div>
    {% comment %}  Map in Footer Tag {% endcomment %}
     <script src="{% static 'add_user/js/navbar.js' %}"></script>
     <footer id= "foot_map">
