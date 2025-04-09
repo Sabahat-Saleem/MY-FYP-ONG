@@ -1,4 +1,4 @@
-i am giving you interest.html {% extends 'add_user/home.html' %}
+{% extends 'add_user/home.html' %}
 {% load static %}
 
 {% block content %}
@@ -6,11 +6,10 @@ i am giving you interest.html {% extends 'add_user/home.html' %}
     <h2>Find Your Recommended Destinations</h2>
 
     <!-- Search form for destinations -->
-    {% comment %} <form method="POST" id="interest-form"> {% endcomment %}
-        <form method="POST" action="{% url 'interest_page' %}">
-        {% csrf_token %}
+    <form id="interest-form" method="GET">
         <label for="destination">Enter Destination</label>
         <input type="text" id="destination" name="destination" placeholder="e.g., Mountains, Lakes, etc." required>
+        <button type="submit" style="display: none;"></button> <!-- optional: hides accidental submission -->
     </form>
 
     <!-- Suggestions container -->
@@ -21,21 +20,19 @@ i am giving you interest.html {% extends 'add_user/home.html' %}
     <!-- Recommendations container -->
     <div id="recommendations-container" style="margin-top: 20px;">
         {% if recommendations %}
-            <h3>Recommended Destinations:</h3>
-            <ul>
-                {% for category, places in recommendations.items %}
-                    <li>
-                        <strong>{{ category|title }}:</strong>
-                        <ul>
-                            {% for place in places %}
-                                <li>{{ place }}</li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No recommendations found for your search.</p>
+        <h3>Recommended Destinations:</h3>
+        <ul>
+            {% for category, places in recommendations.items %}
+                <li>
+                    <strong>{{ category|title }}:</strong>
+                    <ul>
+                        {% for place in places %}
+                            <li>{{ place }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
         {% endif %}
     </div>
 </div>
@@ -45,17 +42,17 @@ i am giving you interest.html {% extends 'add_user/home.html' %}
 <script>
     function getSuggestions(query) {
         console.log("Searching for:", query); // log query to check if it's correctly captured
-    
+
         const suggestionsContainer = document.getElementById('suggestions-container');
         const suggestionsList = document.getElementById('suggestions-list');
-    
+
         // Don't show suggestions if query is empty or too short
         if (!query || query.trim().length < 3) {
             suggestionsList.innerHTML = '';
             suggestionsContainer.style.display = 'none';
             return;
         }
-    
+
         // Fetch suggestions from the backend (ensure this is a GET request)
         fetch(`/interests/?query=${encodeURIComponent(query)}`, {
             method: 'GET'  // Ensure this is a GET request
@@ -63,17 +60,17 @@ i am giving you interest.html {% extends 'add_user/home.html' %}
         .then(response => response.json())
         .then(data => {
             console.log("Suggestions data:", data); // Check the response from the server
-    
+
             suggestionsList.innerHTML = ''; // Clear previous suggestions
-    
+
             if (data.suggestions && data.suggestions.length > 0) {
                 suggestionsContainer.style.display = 'block'; // Show suggestions container
-    
-                // Create a single string to append all items in one go (performance improvement)
+
+                // Create a string to append all items at once for performance
                 const items = data.suggestions.map(item => {
-                    return `<li>${item.name} (${item.category})</li>`;
+                    return `<li>${item}</li>`;  // Only show the place name
                 }).join('');
-    
+
                 suggestionsList.innerHTML = items; // Append all items at once
             } else {
                 suggestionsContainer.style.display = 'none'; // Hide if no suggestions
@@ -84,23 +81,5 @@ i am giving you interest.html {% extends 'add_user/home.html' %}
             console.error('Error fetching suggestions:', error);
         });
     }
-    
-    // Add event listener for keyup after DOM is fully loaded
-    document.addEventListener("DOMContentLoaded", function() {
-        const input = document.getElementById("destination");
-    
-        if (input) {
-            console.log('Input element found.');
-            // Add event listener to the input field for 'keyup'
-            input.addEventListener("keyup", function () {
-                const query = input.value.trim();
-                console.log('Key pressed, query:', query); // Log the query on each keyup
-                getSuggestions(query); // Call getSuggestions when typing
-            });
-        } else {
-            console.log('Input element not found.');
-        }
-    });    
-    
 </script>
-{% endblock %}  
+{% endblock %}

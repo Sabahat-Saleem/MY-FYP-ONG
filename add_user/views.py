@@ -240,6 +240,31 @@ def settings(request):
 
 #     # Return the suggestions as JSON
 #     return JsonResponse({'suggestions': suggestions})
+# def get_interest_info(request):
+#     if request.method == 'GET':  # Ensure the method is GET
+#         query = request.GET.get('query', '').strip()
+#         print(f"Received query: '{query}'")
+
+#         if query:
+#             # Filter interests based on the query
+#             suggestions = Interest.objects.filter(name__icontains=query)
+#         else:
+#             suggestions = []
+
+#         # Respond with the suggestions
+#         response_data = {
+#             'suggestions': [{'name': suggestion.name, 'category': suggestion.category} for suggestion in suggestions]
+#         }
+        
+#         if not suggestions:
+#             response_data['message'] = 'No suggestions found for your query.'
+        
+#         return JsonResponse(response_data)
+
+#     # If the method is not GET, return an error
+#     return JsonResponse({'error': 'Invalid request method'}, status=405)
+from django.http import JsonResponse
+
 def get_interest_info(request):
     if request.method == 'GET':  # Ensure the method is GET
         query = request.GET.get('query', '').strip()
@@ -248,42 +273,125 @@ def get_interest_info(request):
         if query:
             # Filter interests based on the query
             suggestions = Interest.objects.filter(name__icontains=query)
+            
+            # Get place-based recommendations (you can integrate your dictionary here)
+            recommendations = get_recommendations(query)  # Call your function for recommendations
         else:
             suggestions = []
+            recommendations = {}
 
-        # Respond with the suggestions
+        # Prepare the response data
         response_data = {
-            'suggestions': [{'name': suggestion.name, 'category': suggestion.category} for suggestion in suggestions]
+            'suggestions': [{'name': suggestion.name, 'category': suggestion.category} for suggestion in suggestions],
+            'recommendations': recommendations  # Add recommendations to the response
         }
         
-        if not suggestions:
-            response_data['message'] = 'No suggestions found for your query.'
+        if not suggestions and not recommendations:
+            response_data['message'] = 'No suggestions or recommendations found for your query.'
         
         return JsonResponse(response_data)
 
-    # If the method is not GET, return an error
-    return JsonResponse({'error': 'Invalid request method'}, status=405)
+def get_recommendations(query):
+    recommendations = {
+        "snow": [
+            "Murree",
+            "Naran Kaghan",
+            "Gilgit-Baltistan",
+            "Malam Jabba",
+            "Kaghan Valley",
+            "Azad Kashmir",
+            "Swat Valley",
+            "Ziarat",
+            "Khunjerab Pass"
+        ],
+        "greenery": [
+            "Islamabad",
+            "Murree",
+            "Fairy Meadows",
+            "Shogran",
+            "Hunza Valley",
+            "Naran Kaghan",
+            "Neelum Valley",
+            "Swat Valley",
+            "Kaghan Valley",
+            "Ratti Gali Lake"
+        ],
+        "mountains": [
+            "Hunza Valley",
+            "Gilgit-Baltistan",
+            "Murree",
+            "Kaghan Valley",
+            "Naltar Valley",
+            "Khunjerab Pass",
+            "Deosai National Park",
+            "Ratti Gali Lake",
+            "Babusar Pass"
+        ],
+        "lakes": [
+            "Saif ul Malook",
+            "Ratti Gali Lake",
+            "Attabad Lake",
+            "Shandur Lake",
+            "Keel Lake",
+            "Kund Malir",
+            "Kaghan Lake",
+            "Lulusar Lake",
+            "Naltar Lake",
+            "Attabad Lake"
+        ],
+        "waterfalls": [
+            "Dhani Waterfall (Faisalabad)",
+            "Malam Jabba Waterfalls",
+            "Toli Pir Waterfall (Rawalakot)",
+            "Dhani Waterfall (Neelum Valley)",
+            "Nuranang Waterfall (Kaghan Valley)",
+            "Manthoka Waterfall (Skardu)",
+            "Ratti Gali Waterfall",
+            "Torkham Waterfall (Khyber Pakhtunkhwa)",
+            "Banjosa Waterfall (Rawalakot)",
+            "Shounter Waterfall (Azad Kashmir)"
+        ],
+        "desert": [
+            "Thar Desert",
+            "Cholistan Desert",
+            "Kharan Desert",
+            "Dasht-e-Margo",
+            "Rohi Desert",
+            "Mekran Coast"
+        ],
+        "forests": [
+            "Changa Manga",
+            "Kaghan Valley",
+            "Balochistan Forests",
+            "Margalla Hills",
+            "Kashmir Forests",
+            "Shogran",
+            "Fairy Meadows",
+            "Neelum Valley"
+        ]
+    }
+    query = query.lower().strip()
+    filtered_recommendations = []
+
+    for category, places in recommendations.items():
+        if query in category:  # Match the category name
+            filtered_recommendations.extend(places)
+        else:
+            matching_places = [place for place in places if query in place.lower()]
+            if matching_places:
+                filtered_recommendations.extend(matching_places)
+
+    print(f"Filtered Recommendations: {filtered_recommendations}")  # Print the filtered recommendations
+    return filtered_recommendations
+
+
 def interest_page(request):
-    recommendations = []
-    message = None
+    if request.method == 'POST':
+        query = request.POST.get('query', '').strip()
+        recommendations = get_recommendations(query)
+        return JsonResponse({'suggestions': recommendations})
+    return render(request, 'interest_page.html')
 
-    if request.method == 'POST':  # Ensure POST is handled
-        destination = request.POST.get('destination', '').strip()
-
-        if destination:
-            recommendations = get_recommendations(destination)
-
-            if recommendations:
-                message = "Found recommendations for your destination!"
-            else:
-                message = "No recommendations found for this destination."
-    else:
-        message = "Please submit a destination to get recommendations."
-
-    return render(request, 'add_user/interest.html', {
-        'message': message,
-        'recommendations': recommendations,
-    })
 def test_results_template(request):
     results = Interest.objects.all()  # Get some test results or use a mock query
     results_html = render_to_string('add_user/results.html', {'results': results})
@@ -294,97 +402,97 @@ def test_recommendations_template(request):
     return render(request, 'add_user/recommendations.html', {'recommendations': recommendations})
 
 # Sample data for recommendations
-def get_recommendations(query):
-    recommendations = {
-  "snow": [
-    "Murree",
-    "Naran Kaghan",
-    "Gilgit-Baltistan",
-    "Malam Jabba",
-    "Kaghan Valley",
-    "Azad Kashmir",
-    "Swat Valley",
-    "Ziarat",
-    "Khunjerab Pass"
-  ],
-  "greenery": [
-    "Islamabad",
-    "Murree",
-    "Fairy Meadows",
-    "Shogran",
-    "Hunza Valley",
-    "Naran Kaghan",
-    "Neelum Valley",
-    "Swat Valley",
-    "Kaghan Valley",
-    "Ratti Gali Lake"
-  ],
-  "mountains": [
-    "Hunza Valley",
-    "Gilgit-Baltistan",
-    "Murree",
-    "Kaghan Valley",
-    "Naltar Valley",
-    "Khunjerab Pass",
-    "Deosai National Park",
-    "Ratti Gali Lake",
-    "Babusar Pass"
-  ],
-  "lakes": [
-    "Saif ul Malook",
-    "Ratti Gali Lake",
-    "Attabad Lake",
-    "Shandur Lake",
-    "Keel Lake",
-    "Kund Malir",
-    "Kaghan Lake",
-    "Lulusar Lake",
-    "Naltar Lake",
-    "Attabad Lake"
-  ],
-  "waterfalls": [
-    "Dhani Waterfall (Faisalabad)",
-    "Malam Jabba Waterfalls",
-    "Toli Pir Waterfall (Rawalakot)",
-    "Dhani Waterfall (Neelum Valley)",
-    "Nuranang Waterfall (Kaghan Valley)",
-    "Manthoka Waterfall (Skardu)",
-    "Ratti Gali Waterfall",
-    "Torkham Waterfall (Khyber Pakhtunkhwa)",
-    "Banjosa Waterfall (Rawalakot)",
-    "Shounter Waterfall (Azad Kashmir)"
-  ],
-  "desert": [
-    "Thar Desert",
-    "Cholistan Desert",
-    "Kharan Desert",
-    "Dasht-e-Margo",
-    "Rohi Desert",
-    "Mekran Coast"
-  ],
-  "forests": [
-    "Changa Manga",
-    "Kaghan Valley",
-    "Balochistan Forests",
-    "Margalla Hills",
-    "Kashmir Forests",
-    "Shogran",
-    "Fairy Meadows",
-    "Neelum Valley"
-  ]
-}
+# def get_recommendations(query):
+#     recommendations = {
+#   "snow": [
+#     "Murree",
+#     "Naran Kaghan",
+#     "Gilgit-Baltistan",
+#     "Malam Jabba",
+#     "Kaghan Valley",
+#     "Azad Kashmir",
+#     "Swat Valley",
+#     "Ziarat",
+#     "Khunjerab Pass"
+#   ],
+#   "greenery": [
+#     "Islamabad",
+#     "Murree",
+#     "Fairy Meadows",
+#     "Shogran",
+#     "Hunza Valley",
+#     "Naran Kaghan",
+#     "Neelum Valley",
+#     "Swat Valley",
+#     "Kaghan Valley",
+#     "Ratti Gali Lake"
+#   ],
+#   "mountains": [
+#     "Hunza Valley",
+#     "Gilgit-Baltistan",
+#     "Murree",
+#     "Kaghan Valley",
+#     "Naltar Valley",
+#     "Khunjerab Pass",
+#     "Deosai National Park",
+#     "Ratti Gali Lake",
+#     "Babusar Pass"
+#   ],
+#   "lakes": [
+#     "Saif ul Malook",
+#     "Ratti Gali Lake",
+#     "Attabad Lake",
+#     "Shandur Lake",
+#     "Keel Lake",
+#     "Kund Malir",
+#     "Kaghan Lake",
+#     "Lulusar Lake",
+#     "Naltar Lake",
+#     "Attabad Lake"
+#   ],
+#   "waterfalls": [
+#     "Dhani Waterfall (Faisalabad)",
+#     "Malam Jabba Waterfalls",
+#     "Toli Pir Waterfall (Rawalakot)",
+#     "Dhani Waterfall (Neelum Valley)",
+#     "Nuranang Waterfall (Kaghan Valley)",
+#     "Manthoka Waterfall (Skardu)",
+#     "Ratti Gali Waterfall",
+#     "Torkham Waterfall (Khyber Pakhtunkhwa)",
+#     "Banjosa Waterfall (Rawalakot)",
+#     "Shounter Waterfall (Azad Kashmir)"
+#   ],
+#   "desert": [
+#     "Thar Desert",
+#     "Cholistan Desert",
+#     "Kharan Desert",
+#     "Dasht-e-Margo",
+#     "Rohi Desert",
+#     "Mekran Coast"
+#   ],
+#   "forests": [
+#     "Changa Manga",
+#     "Kaghan Valley",
+#     "Balochistan Forests",
+#     "Margalla Hills",
+#     "Kashmir Forests",
+#     "Shogran",
+#     "Fairy Meadows",
+#     "Neelum Valley"
+#   ]
+# }
        
-    # Filter the recommendations based on the query
-    query = query.lower().strip()
-    filtered_recommendations = {}
+#     # Filter the recommendations based on the query
+#     query = query.lower().strip()
+#     filtered_recommendations = {}
 
-    for category, places in recommendations.items():
-        if query in category:  # Match the category name
-            filtered_recommendations[category] = places
-        else:
-            # Also search inside places
-            matching_places = [place for place in places if query in place.lower()]
-            if matching_places:
-                filtered_recommendations[category] = matching_places
+#     for category, places in recommendations.items():
+#         if query in category:  # Match the category name
+#             filtered_recommendations[category] = places
+#         else:
+#             # Also search inside places
+#             matching_places = [place for place in places if query in place.lower()]
+#             if matching_places:
+#                 filtered_recommendations[category] = matching_places
 
-    return filtered_recommendations
+#     return filtered_recommendations
