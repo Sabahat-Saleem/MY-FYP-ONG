@@ -1,4 +1,4 @@
-{% extends 'add_user/home.html' %}
+i am giving you interest.html {% extends 'add_user/home.html' %}
 {% load static %}
 
 {% block content %}
@@ -6,85 +6,101 @@
     <h2>Find Your Recommended Destinations</h2>
 
     <!-- Search form for destinations -->
-   <!-- In the form, ensure that there's no conflict between the search suggestions and form submission -->
-<form method="POST" id="interest-form">
-    {% csrf_token %}
-    <label for="destination">Enter Destination</label>
-    <input type="text" id="destination" name="destination" placeholder="e.g., Mountains, Lakes, etc." required onkeyup="getSuggestions(this.value)">
-    <!-- Disabled submit button to prevent form submission during search -->
-    <button type="submit" id="submit-btn" style="display: none;" disabled>Get Recommendations</button>
-</form>
+    {% comment %} <form method="POST" id="interest-form"> {% endcomment %}
+        <form method="POST" action="{% url 'interest_page' %}">
+        {% csrf_token %}
+        <label for="destination">Enter Destination</label>
+        <input type="text" id="destination" name="destination" placeholder="e.g., Mountains, Lakes, etc." required>
+    </form>
 
-<!-- Suggestions container -->
-<div id="suggestions-container" style="margin-top: 20px; display: none;">
-    <ul id="suggestions-list"></ul>
-</div>
+    <!-- Suggestions container -->
+    <div id="suggestions-container" style="margin-top: 20px; display: none;">
+        <ul id="suggestions-list"></ul>
+    </div>
 
-<!-- Recommendations container -->
-<div id="recommendations-container" style="margin-top: 20px;">
-    {% if recommendations %}
-        <h3>Recommended Destinations:</h3>
-        <ul>
-            {% for category, places in recommendations.items %}
-                <li>
-                    <strong>{{ category|title }}:</strong>
-                    <ul>
-                        {% for place in places %}
-                            <li>{{ place }}</li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No recommendations found for your search.</p>
-    {% endif %}
-</div>
-
-
+    <!-- Recommendations container -->
+    <div id="recommendations-container" style="margin-top: 20px;">
+        {% if recommendations %}
+            <h3>Recommended Destinations:</h3>
+            <ul>
+                {% for category, places in recommendations.items %}
+                    <li>
+                        <strong>{{ category|title }}:</strong>
+                        <ul>
+                            {% for place in places %}
+                                <li>{{ place }}</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No recommendations found for your search.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
 
 {% block javascript %}
 <script>
-    console.log("Hello Sabahat");
     function getSuggestions(query) {
-        console.log("I am in Sabahat");
+        console.log("Searching for:", query); // log query to check if it's correctly captured
+    
         const suggestionsContainer = document.getElementById('suggestions-container');
         const suggestionsList = document.getElementById('suggestions-list');
-
+    
+        // Don't show suggestions if query is empty or too short
         if (!query || query.trim().length < 3) {
             suggestionsList.innerHTML = '';
             suggestionsContainer.style.display = 'none';
             return;
         }
-
-        fetch(`/interests/?query=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(data => {
-                suggestionsList.innerHTML = '';
-
-                if (data.suggestions && data.suggestions.length > 0) {
-                    suggestionsContainer.style.display = 'block';
-                    data.suggestions.forEach(item => {
-                        const li = document.createElement('li');
-                        li.textContent = `${item.name} (${item.category})`;
-                        suggestionsList.appendChild(li);
-                    });
-                } else {
-                    suggestionsContainer.style.display = 'none';
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching suggestions:', error);
-            });
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const input = document.getElementById("destination");
-        input.addEventListener("keyup", function () {
-            getSuggestions(input.value);
+    
+        // Fetch suggestions from the backend (ensure this is a GET request)
+        fetch(`/interests/?query=${encodeURIComponent(query)}`, {
+            method: 'GET'  // Ensure this is a GET request
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Suggestions data:", data); // Check the response from the server
+    
+            suggestionsList.innerHTML = ''; // Clear previous suggestions
+    
+            if (data.suggestions && data.suggestions.length > 0) {
+                suggestionsContainer.style.display = 'block'; // Show suggestions container
+    
+                // Create a single string to append all items in one go (performance improvement)
+                const items = data.suggestions.map(item => {
+                    return `<li>${item.name} (${item.category})</li>`;
+                }).join('');
+    
+                suggestionsList.innerHTML = items; // Append all items at once
+            } else {
+                suggestionsContainer.style.display = 'none'; // Hide if no suggestions
+                suggestionsList.innerHTML = '<li>No suggestions found.</li>'; // Show message if no suggestions
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching suggestions:', error);
         });
-    });
+    }
+    
+    // Add event listener for keyup after DOM is fully loaded
+    document.addEventListener("DOMContentLoaded", function() {
+        const input = document.getElementById("destination");
+    
+        if (input) {
+            console.log('Input element found.');
+            // Add event listener to the input field for 'keyup'
+            input.addEventListener("keyup", function () {
+                const query = input.value.trim();
+                console.log('Key pressed, query:', query); // Log the query on each keyup
+                getSuggestions(query); // Call getSuggestions when typing
+            });
+        } else {
+            console.log('Input element not found.');
+        }
+    });    
+    
 </script>
-{% endblock %}
+{% endblock %}  

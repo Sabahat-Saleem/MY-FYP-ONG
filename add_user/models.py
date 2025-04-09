@@ -69,7 +69,12 @@ class Dashboard(models.Model):
 
     def __str__(self):
         return f"Dashboard for {self.user.username}"
-    
+
+class InterestCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name 
 
 class Interest(models.Model):
     name = models.CharField(max_length=100, default="Unknown")
