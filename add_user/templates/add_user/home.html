@@ -65,18 +65,21 @@
     {{ form.as_p }}
     <button type="submit">Search Interests</button>
 </form> {% endcomment %}
-  <div class="container">
-        <h2>Find Your Recommended Destinations</h2>
-        <!-- Include your form from interest.html here -->
-        <form method="POST" action="{% url 'interest' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="text" id="destination" name="destination" 
-       placeholder="e.g., Mountains, Lakes, etc." 
-       required onkeyup="console.log('Key pressed!'); getSuggestions(this.value)">
-            <button type="submit">Search Interests</button>
-        </form>
-    </div>
+<div class="container">
+    <h2>Find Your Recommended Destinations</h2>
+    <!-- Include your form from interest.html here -->
+    <form method="POST" action="{% url 'interest_page' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="text" id="destination" name="destination" 
+               placeholder="e.g., Mountains, Lakes, etc." 
+               required>
+        <button type="submit">Search Interests</button>
+        <div id="suggestions-container" style="display:none;">
+            <ul id="suggestions-list"></ul>
+        </div>
+    </form>
+</div>
    {% comment %}  Map in Footer Tag {% endcomment %}
     <script src="{% static 'add_user/js/navbar.js' %}"></script>
     <footer id= "foot_map">
@@ -128,4 +131,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
+  home.html 

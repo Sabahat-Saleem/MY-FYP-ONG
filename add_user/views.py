@@ -209,37 +209,76 @@ def settings(request):
     return render(request, 'settings.html')  # Loads the settings page
  
 
-@login_required
+# def get_interest_info(request):
+#     query = request.GET.get('query', '').strip()
+#     if query:
+#         interests = Interest.objects.filter(name__icontains=query).distinct()  # Ensure uniqueness
+#     else:
+#         interests = Interest.objects.all().distinct()  # Ensure uniqueness
+
+#     suggestions = [
+#         {'name': interest.name, 'category': interest.category}
+#         for interest in interests
+#     ]
+#     return JsonResponse({'suggestions': suggestions})
+# def get_interest_info(request):
+#     query = request.GET.get('query', '').strip()
+#     print(f"Received query: {query}")  # Log the query
+
+#     suggestions = []
+
+#     if query:
+#         # Fetch interests from the database that match the query
+#         interests = Interest.objects.filter(name__icontains=query)
+#         print(f"Found interests: {interests}")  # Log the interests found
+
+#         # Prepare suggestions to be returned as a JSON response
+#         suggestions = [
+#             {'name': interest.name, 'category': interest.category}
+#             for interest in interests
+#         ]
+
+#     # Return the suggestions as JSON
+#     return JsonResponse({'suggestions': suggestions})
 def get_interest_info(request):
-    query = request.GET.get('query', '').strip()
-    if query:
-        interests = Interest.objects.filter(name__icontains=query)
-    else:
-        interests = Interest.objects.all()
+    if request.method == 'GET':  # Ensure the method is GET
+        query = request.GET.get('query', '').strip()
+        print(f"Received query: '{query}'")
 
-    suggestions = [
-        {'name': interest.name, 'category': interest.category.name}
-        for interest in interests
-    ]
-    return JsonResponse({'suggestions': suggestions})
+        if query:
+            # Filter interests based on the query
+            suggestions = Interest.objects.filter(name__icontains=query)
+        else:
+            suggestions = []
 
-@login_required
+        # Respond with the suggestions
+        response_data = {
+            'suggestions': [{'name': suggestion.name, 'category': suggestion.category} for suggestion in suggestions]
+        }
+        
+        if not suggestions:
+            response_data['message'] = 'No suggestions found for your query.'
+        
+        return JsonResponse(response_data)
+
+    # If the method is not GET, return an error
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 def interest_page(request):
     recommendations = []
     message = None
 
-    if request.method == 'POST':
-        # Get the user input from the form
+    if request.method == 'POST':  # Ensure POST is handled
         destination = request.POST.get('destination', '').strip()
 
-        # Fetch recommendations based on the user input
         if destination:
-            recommendations = get_recommendations(destination)  # Assuming this returns a dictionary of recommendations
+            recommendations = get_recommendations(destination)
 
             if recommendations:
                 message = "Found recommendations for your destination!"
             else:
                 message = "No recommendations found for this destination."
+    else:
+        message = "Please submit a destination to get recommendations."
 
     return render(request, 'add_user/interest.html', {
         'message': message,
