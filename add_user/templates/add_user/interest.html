@@ -5,13 +5,13 @@
 <div class="container">
     <h2>Find Your Recommended Destinations</h2>
 
-    <!-- Search form for destinations -->
     <form id="interest-form" method="GET">
         <label for="destination">Enter Destination</label>
         <input type="text" id="destination" name="destination" placeholder="e.g., Mountains, Lakes, etc." required>
-        <button type="submit" style="display: none;"></button> <!-- optional: hides accidental submission -->
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <button type="submit" style="display: none;"></button>
     </form>
-
+    
     <!-- Suggestions container -->
     <div id="suggestions-container" style="margin-top: 20px; display: none;">
         <ul id="suggestions-list"></ul>
@@ -38,48 +38,53 @@
 </div>
 {% endblock %}
 
-{% block javascript %}
+{% block scripts %}
 <script>
-    function getSuggestions(query) {
-        console.log("Searching for:", query); // log query to check if it's correctly captured
-
-        const suggestionsContainer = document.getElementById('suggestions-container');
-        const suggestionsList = document.getElementById('suggestions-list');
-
-        // Don't show suggestions if query is empty or too short
-        if (!query || query.trim().length < 3) {
-            suggestionsList.innerHTML = '';
-            suggestionsContainer.style.display = 'none';
-            return;
+    document.getElementById('interest-form').addEventListener('submit', function(event) {
+        console.log("Form submitted"); // Check if this is triggered
+        event.preventDefault();
+    
+        let query = document.getElementById('destination').value.trim();
+        console.log("Query being sent:", query); // Log the query here
+    
+        if (!query) {
+            console.log("Empty query, not sending request.");
+            return;  // Don't make the request if query is empty
         }
-
-        // Fetch suggestions from the backend (ensure this is a GET request)
-        fetch(`/interests/?query=${encodeURIComponent(query)}`, {
-            method: 'GET'  // Ensure this is a GET request
+    
+        // Make the request only if query is not empty
+        fetch(`/interest_page/?query=${query}`, {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
         })
         .then(response => response.json())
         .then(data => {
-            console.log("Suggestions data:", data); // Check the response from the server
-
-            suggestionsList.innerHTML = ''; // Clear previous suggestions
-
-            if (data.suggestions && data.suggestions.length > 0) {
-                suggestionsContainer.style.display = 'block'; // Show suggestions container
-
-                // Create a string to append all items at once for performance
-                const items = data.suggestions.map(item => {
-                    return `<li>${item}</li>`;  // Only show the place name
-                }).join('');
-
-                suggestionsList.innerHTML = items; // Append all items at once
+            console.log(data);  // Log response for debugging
+            let suggestionsContainer = document.getElementById('suggestions-container');
+            suggestionsContainer.innerHTML = '';  // Clear previous suggestions
+    
+            if (data.suggestions.length) {
+                data.suggestions.forEach(suggestion => {
+                    let div = document.createElement('div');
+                    div.textContent = suggestion;
+                    suggestionsContainer.appendChild(div);
+                });
             } else {
-                suggestionsContainer.style.display = 'none'; // Hide if no suggestions
-                suggestionsList.innerHTML = '<li>No suggestions found.</li>'; // Show message if no suggestions
+                suggestionsContainer.innerHTML = 'No suggestions found.';
             }
         })
         .catch(error => {
-            console.error('Error fetching suggestions:', error);
+            console.error('Error:', error);
         });
-    }
+    document.getElementById('submit-button').addEventListener('click', function(event) {
+        console.log("Button clicked"); // Check if this is triggered
+        event.preventDefault();
+    
+        let query = document.getElementById('destination').value.trim();
+        console.log("Query being sent:", query);
+        if (!query) return;   
+    });
 </script>
 {% endblock %}
