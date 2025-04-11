@@ -30,6 +30,6 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name="dashboard_page"),
     path('update-profile/', views.update_profile, name='update_profile'),
     path('logout/', views.user_logout, name='logout'),
-    path('interests/', views.get_interest_info, name='interest'),
+    path('interests/', views.get_interest_info, name='get_interest_info'),
     path('interest_page/', views.interest_page, name='interest_page'),
 ]

@@ -225,7 +225,7 @@ def get_interest_info(request):
             # Query matches a category
             print(f"Query matches predefined category: {query}")
             interests = Interest.objects.filter(
-                Q(category__iexact=query)
+                Q(category__name__iexact=query)
             ).distinct()
             print(f"Filtered interests for category '{query}': {interests}")
         else:
@@ -303,14 +303,26 @@ def get_recommendations(query):
                     matched.add(place)
     
     return list(matched)
+def get_suggestions(query):
+    # Example list of suggestions (can be replaced with database query or more complex logic)
+    all_suggestions = [
+        'Mountains', 'Lakes', 'Beaches', 'Forests', 'Deserts', 'Snow', 'Rivers', 'Volcanoes'
+    ]
+    
+    # Filter suggestions based on the query
+    return [sug for sug in all_suggestions if query in sug.lower()]
 # Your Django view
 def interest_page(request):
     query = request.GET.get('query', '').strip().lower()
 
-    # Get recommendations based on the query
-    suggestions = get_recommendations(query)
-    
-    # Return the suggestions as a JSON response
-    return JsonResponse({'suggestions': suggestions})
+    # Get suggestions and recommendations based on the query
+    suggestions = get_suggestions(query)  # Your logic to fetch suggestions
+    recommendations = get_recommendations(query)  # Your logic to fetch recommendations
+
+    # Return both suggestions and recommendations as a JSON response
+    return JsonResponse({
+        'suggestions': suggestions,
+        'recommendations': recommendations
+    })
 
 
