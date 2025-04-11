@@ -23,7 +23,15 @@
     </div>
 
 {% endblock %}
+<footer>
+    <h3>Explore the Map Below</h3>
+    <input id="pac-input" type="text" placeholder="Search for a place">
+    <div id="map" style="height: 400px; width: 100%;"></div>
+</footer>
 
+<!-- JS Scripts -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0CpNmGrdKMb99XDAVVohyVejKLNqyuRc&libraries=places&callback=initMap"></script>
+<script src="{% static 'add_user/js/navbar.js' %}"></script>
 {% block javascripts %}
 <script>
     console.log("Hello");
@@ -83,4 +91,5 @@
         }
     });
 </script>
+
 {% endblock %}
