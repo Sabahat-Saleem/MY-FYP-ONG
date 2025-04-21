@@ -140,13 +140,25 @@
 
         <div class="form-group">
             <div>
-                <label for="travel_season">Preferred Travel Season:</label>
-                <input type="text" id="travel_season" name="travel_season">
+                <label for="preferred_season">Preferred Travel Season:</label>
+                <select id="preferred_season" name="preferred_season" required>
+                    <option value="">Select Season</option>
+                    <option value="Winter">Winter</option>
+                    <option value="Spring">Spring</option>
+                    <option value="Summer">Summer</option>
+                    <option value="Autumn">Autumn</option>
+                </select>
             </div>
 
             <div>
-                <label for="travel_type">Preferred Travel Type:</label>
-                <input type="text" id="travel_type" name="travel_type">
+                <label for="preferred_travel_type">Preferred Travel Type:</label>
+                <select id="preferred_travel_type" name="preferred_travel_type" required>
+                    <option value="">Select Type</option>
+                    <option value="Adventure">Adventure</option>
+                    <option value="Relaxation">Relaxation</option>
+                    <option value="Cultural">Cultural</option>
+                    <option value="Wildlife">Wildlife</option>
+                </select>
             </div>
 
             <div>

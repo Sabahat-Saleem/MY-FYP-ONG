@@ -38,14 +38,14 @@ class Location(models.Model):
         return self.name
 
 class Event(models.Model):
-    title = models.CharField(max_length=100)
-    date = models.DateField()
-    season = models.CharField(max_length=10, choices=User.TRAVEL_SEASONS)
-    travel_type = models.CharField(max_length=15, choices=User.TRAVEL_TYPES)
+    name = models.CharField(max_length=255)
     description = models.TextField()
+    season = models.CharField(max_length=50)
+    travel_type = models.CharField(max_length=50)
+    date = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return self.title
+        return f'{self.name} ({self.season})'
 
 class TravelTip(models.Model):
     title = models.CharField(max_length=150)
@@ -55,11 +55,6 @@ class TravelTip(models.Model):
 
     def __str__(self):
         return self.title
-    def full_name(self):
-            return f"{self.first_name} {self.last_name}".strip()
-
-    def __str__(self):
-        return self.full_name() or "Unnamed User"
 # ***********************************************************
 
 class Dashboard(models.Model):
