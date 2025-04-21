@@ -8,8 +8,9 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q
-
+from .forms import Travel_Registration, UserUpdateForm
+from .models import Location, Event, TravelTip, Interest
+User = get_user_model()
 # def add_show(request):
 #     if request.method == 'POST':
 #         print("Request POST Data:", request.POST)  # Debugging
