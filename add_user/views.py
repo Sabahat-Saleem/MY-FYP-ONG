@@ -10,47 +10,12 @@ from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from .forms import Travel_Registration, UserUpdateForm
 from .models import Location, Event, TravelTip, Interest
+from .utils import get_duffel_schedules
+from django.conf import settings
+
 User = get_user_model()
-# def add_show(request):
-#     if request.method == 'POST':
-#         print("Request POST Data:", request.POST)  # Debugging
+import requests
 
-#         fm = Travel_Registration(request.POST)
-#         if fm.is_valid():
-#             fn = fm.cleaned_data['first_name']
-#             ln = fm.cleaned_data['last_name']
-#             em = fm.cleaned_data['email']
-#             pw = fm.cleaned_data['password']
-
-#             full_name = f"{fn} {ln}".strip()
-
-#             if not fn.strip() or not ln.strip():
-#                 messages.error(request, "First name and last name cannot be empty!")
-#             elif User.objects.filter(first_name=fn, last_name=ln).exists():
-#                 messages.error(request, "User with this name already exists!")
-#             elif User.objects.filter(email=em).exists():
-#                 messages.error(request, "User with this email already exists!")
-#             else:
-#                 try:
-#                     reg = User(first_name=fn, last_name=ln, email=em, username=em, is_staff=True)  # Admin access
-#                     reg.set_password(pw)
-#                     reg.save()
-#                     messages.success(request, "User added successfully!")
-#                     return redirect('/addandshow/')
-#                 except IntegrityError as e:
-#                     print("IntegrityError:", e)  # Add this line
-#                     messages.error(request, f"Integrity error: {str(e)}")
-#                 except Exception as e:
-#                     messages.error(request, f"Unexpected error: {e}")
-
-#     else:
-#         fm = Travel_Registration()
-
-#     # Fetch users and combine their first and last names
-#     hods = User.objects.all()
-#     users_with_full_names = [{'id': user.id, 'name': f"{user.first_name} {user.last_name}", 'email': user.email} for user in hods]
-
-#     return render(request, 'add_user/addandshow.html', {'form': fm, 'hods': users_with_full_names})
 def add_show(request):
     if request.method == 'POST':
         print("Request POST Data:", request.POST)  # Debugging
@@ -234,7 +199,13 @@ def user_logout(request):
 
 
 def Home(request):
-    return render(request, 'add_user/home.html')  # Load home.html
+    offers = get_duffel_schedules()  # Use your utility function
+
+    context = {
+        'flight_offers': offers
+    }
+
+    return render(request, 'add_user/home.html', context) # Load home.html
 
  
 # @login_required
@@ -396,5 +367,4 @@ def interest_page(request):
         'suggestions': suggestions,
         'recommendations': recommendations
     })
-
 
