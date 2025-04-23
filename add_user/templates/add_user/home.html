@@ -40,53 +40,103 @@
 </div>
 
 <!-- Search Form Section -->
-<div class="container">
-    <h2>Find Your Recommended Destinations</h2>
+<div class="container my-5 position-relative">
+    <div class="row align-items-center">
+        <!-- Left Thumbnails -->
+        <div class="col-md-2 d-none d-md-flex flex-column align-items-center gap-3">
+            <img src="{% static 'add_user/images/img1.jpg' %}" class="img-thumbnail rounded-circle shadow-sm" alt="Thumb 1" style="width: 120px; height: 120px;">
+            <img src="{% static 'add_user/images/img2.jpg' %}" class="img-thumbnail rounded-circle shadow-sm" alt="Thumb 2" style="width: 120px; height: 120px;">
+            <img src="{% static 'add_user/images/img3.jpg' %}" class="img-thumbnail rounded-circle shadow-sm" alt="Thumb 3" style="width: 120px; height: 120px;">
+        </div>
 
-    <form id="interest-form">
-        <input type="text" id="destination" name="destination" placeholder="e.g., Mountains, Lakes, etc." required>
-        <button type="submit">Search Interests</button>
-    </form>
+        <!-- Main Content -->
+        <div class="col-12 col-md-10 text-center">
+            <h2 class="fw-bold text-primary mb-3">Find Your Recommended Destinations</h2>
+            <p class="text-muted mb-4">Explore places tailored to your interests. Just type in what you love — from mountains to beaches — and we’ll guide you to the perfect spot.</p>
 
-    <!-- Suggestions -->
-    <div id="suggestions-container" style="display:none;">
-        <h3>Suggestions:</h3>
-        <ul id="suggestions-list"></ul>
-    </div>
+            <form id="interest-form" class="d-flex flex-column align-items-center gap-3">
+                <input type="text" id="destination" name="destination" class="form-control form-control-lg shadow-sm rounded-pill px-4" placeholder="e.g., Mountains, Lakes, etc." required>
+                <button type="submit" class="btn animated-btn">Search Interests</button>
+            </form>
 
-    <!-- Recommendations -->
-    <div id="recommendations-container" style="display:none;">
-        <h3>Recommended Destinations:</h3>
-        <ul id="recommendations-list"></ul>
+            <!-- Suggestions -->
+            <div id="suggestions-container" class="mt-5" style="display:none;">
+                <h3 class="text-success mb-4">Suggestions:</h3>
+                <ul id="suggestions-list" class="list-group list-group-horizontal flex-wrap justify-content-center gap-3"></ul>
+            </div>
+
+            <!-- Recommendations -->
+            <div id="recommendations-container" class="mt-5" style="display:none;">
+                <h3 class="text-success mb-4">Recommended Destinations:</h3>
+                <ul id="recommendations-list" class="list-group list-group-horizontal flex-wrap justify-content-center gap-3"></ul>
+            </div>
+        </div>
     </div>
 </div>
-<h2>Flight Offers</h2>
- 
- {% if flight_offers %}
-     <ul>
-         {% for offer in flight_offers %}
-             <li>
-                 <strong>Total Amount:</strong> {{ offer.total_amount }} {{ offer.total_currency }}<br>
-                 <strong>Cabin Class:</strong> {{ offer.cabin_class }}<br>
-                 <strong>Segments:</strong>
-                 <ul>
-                     {% for slice in offer.slices %}
-                         {% for segment in slice.segments %}
-                             <li>
-                                 {{ segment.departing_at }} - 
-                                 {{ segment.origin.iata_code }} → 
-                                 {{ segment.destination.iata_code }}
-                             </li>
-                         {% endfor %}
-                     {% endfor %}
-                 </ul>
-             </li>
-         {% endfor %}
-     </ul>
- {% else %}
-     <p>No flight offers available right now.</p>
- {% endif %}
-
+</div>
+<!-- Section: Explore Flights -->
+<section class="py-5 bg-light">
+    <div class="container">
+      <div class="row align-items-center">
+        <!-- Text Section -->
+        <div class="col-md-6 mb-4 mb-md-0">
+          <h2 class="fw-bold" style="color: #30748c;">✈️ Explore Flight Deals</h2>
+          <p class="text-muted">
+            Discover unbeatable flight offers tailored to your travel needs. Whether you're traveling for business or leisure, we have the perfect flight options just for you
+          </p>
+          <ul class="list-unstyled">
+            <li>✅ Affordable international and domestic flights</li>
+            <li>✅ Real-time availability and deals</li>
+            <li>✅ Filter by cabin class, time, or route</li>
+            <li>✅ Trusted by thousands of travelers</li>
+          </ul>
+          <button class="btn custom-btn mt-3" onclick="toggleFlightOffers()">Show Flight Offers</button>
+        </div>
+  
+        <!-- Image Section -->
+        <div class="col-md-6 text-center">
+          <img src="{% static 'add_user/images/flight.png' %}"
+               alt="Flight" class="img-fluid rounded shadow animate-fade-in" style="max-height: 350px;">
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Dynamic Flight Offers Section (Initially Hidden) -->
+  <div id="flight-offers-section" class="container d-none">
+    <h2 class="custom-heading mb-4 text-center">✈️ Flight Offers</h2>
+  
+    {% if flight_offers %}
+      <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for offer in flight_offers %}
+          <div class="col animate-fade-in">
+            <div class="card shadow-sm h-100 border-0" style="border-left: 5px solid #30748c;">
+              <div class="card-body">
+                <h5 class="card-title text-success">Total: {{ offer.total_amount }} {{ offer.total_currency }}</h5>
+                <p class="card-text"><strong>Cabin Class:</strong> {{ offer.cabin_class }}</p>
+                <p class="card-text"><strong>Segments:</strong></p>
+                <ul class="list-group list-group-flush">
+                  {% for slice in offer.slices %}
+                    {% for segment in slice.segments %}
+                      <li class="list-group-item">
+                        <span class="text-muted">{{ segment.departing_at }}</span><br>
+                        <strong>{{ segment.origin.iata_code }}</strong> → <strong>{{ segment.destination.iata_code }}</strong>
+                      </li>
+                    {% endfor %}
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-warning mt-4" role="alert">
+        No flight offers available right now.
+      </div>
+    {% endif %}
+  </div>
+  
 
 <!-- Google Map Section -->
 <footer>
@@ -183,6 +233,24 @@ function initMap() {
         marker.setPosition(place.geometry.location);
     });
 }
+function toggleFlightOffers() {
+    const section = document.getElementById("flight-offers-section");
+
+    if (section.classList.contains("d-none")) {
+      section.classList.remove("d-none"); // Show the section
+
+      // Trigger animations (re-apply class to re-trigger)
+      const cards = section.querySelectorAll('.animate-fade-in');
+      cards.forEach((card, i) => {
+        card.style.animationDelay = `${i * 0.1}s`; // stagger effect
+        card.classList.remove('animate-fade-in'); // reset
+        void card.offsetWidth; // reflow to restart animation
+        card.classList.add('animate-fade-in'); // restart animation
+      });
+    } else {
+      section.classList.add("d-none"); // Hide the section
+    }
+  }
 </script>
 {% endblock %}
 
