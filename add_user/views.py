@@ -199,13 +199,13 @@ def user_logout(request):
 
 
 def Home(request):
-    offers = get_duffel_schedules()  # Use your utility function
-
-    context = {
-        'flight_offers': offers
-    }
-
-    return render(request, 'add_user/home.html', context) # Load home.html
+     offers = get_duffel_schedules()  # Use your utility function
+ 
+     context = {
+         'flight_offers': offers
+     }
+ 
+     return render(request, 'add_user/home.html', context)
 
  
 # @login_required

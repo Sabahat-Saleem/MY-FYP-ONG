@@ -61,31 +61,33 @@
     </div>
 </div>
 <h2>Flight Offers</h2>
+ 
+ {% if flight_offers %}
+     <ul>
+         {% for offer in flight_offers %}
+             <li>
+                 <strong>Total Amount:</strong> {{ offer.total_amount }} {{ offer.total_currency }}<br>
+                 <strong>Cabin Class:</strong> {{ offer.cabin_class }}<br>
+                 <strong>Segments:</strong>
+                 <ul>
+                     {% for slice in offer.slices %}
+                         {% for segment in slice.segments %}
+                             <li>
+                                 {{ segment.departing_at }} - 
+                                 {{ segment.origin.iata_code }} → 
+                                 {{ segment.destination.iata_code }}
+                             </li>
+                         {% endfor %}
+                     {% endfor %}
+                 </ul>
+             </li>
+         {% endfor %}
+     </ul>
+ {% else %}
+     <p>No flight offers available right now.</p>
+ {% endif %}
 
-{% if flight_offers %}
-    <ul>
-        {% for offer in flight_offers %}
-            <li>
-                <strong>Total Amount:</strong> {{ offer.total_amount }} {{ offer.total_currency }}<br>
-                <strong>Cabin Class:</strong> {{ offer.cabin_class }}<br>
-                <strong>Segments:</strong>
-                <ul>
-                    {% for slice in offer.slices %}
-                        {% for segment in slice.segments %}
-                            <li>
-                                {{ segment.departing_at }} - 
-                                {{ segment.origin.iata_code }} → 
-                                {{ segment.destination.iata_code }}
-                            </li>
-                        {% endfor %}
-                    {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No flight offers available right now.</p>
-{% endif %}
+
 <!-- Google Map Section -->
 <footer>
     <h3>Explore the Map Below</h3>
