@@ -139,10 +139,14 @@
   
 
 <!-- Google Map Section -->
-<footer>
-    <h3>Explore the Map Below</h3>
-    <input id="pac-input" type="text" placeholder="Search for a place">
-    <div id="map" style="height: 500px; width: 100%;"></div>
+<footer style="background-color: #f8f9fa; padding: 40px 0; border-top: 2px solid #30748c;">
+    <div class="container">
+        <h3 class="text-center text-primary mb-4" style="font-size: 2rem; font-weight: 600;">Explore the Map Below</h3>
+        <div class="input-group mb-4">
+            <input id="pac-input" type="text" class="form-control border-2 border-primary shadow-sm" placeholder="Search for a place" style="font-size: 1.2rem;">
+        </div>
+        <div id="map" style="height: 500px; width: 100%; border-radius: 10px; border: 3px solid #30748c;"></div>
+    </div>
 </footer>
 
 <!-- JS Scripts -->
@@ -234,23 +238,18 @@ function initMap() {
     });
 }
 function toggleFlightOffers() {
-    const section = document.getElementById("flight-offers-section");
+    var offersContainer = document.getElementById("flight-offers-section");
 
-    if (section.classList.contains("d-none")) {
-      section.classList.remove("d-none"); // Show the section
-
-      // Trigger animations (re-apply class to re-trigger)
-      const cards = section.querySelectorAll('.animate-fade-in');
-      cards.forEach((card, i) => {
-        card.style.animationDelay = `${i * 0.1}s`; // stagger effect
-        card.classList.remove('animate-fade-in'); // reset
-        void card.offsetWidth; // reflow to restart animation
-        card.classList.add('animate-fade-in'); // restart animation
-      });
+    // Toggle visibility and apply the fade-in animation
+    if (offersContainer.classList.contains("d-none")) {
+        offersContainer.classList.remove("d-none");
+        offersContainer.classList.add("visible");
     } else {
-      section.classList.add("d-none"); // Hide the section
+        offersContainer.classList.add("d-none");
+        offersContainer.classList.remove("visible");
     }
-  }
+}
+
 </script>
 {% endblock %}
 

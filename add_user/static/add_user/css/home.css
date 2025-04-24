@@ -95,25 +95,149 @@ ul.list-group {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
  /* Flights work  */
+/* Styling for the Button */
 .custom-btn {
     background-color: #30748c;
     color: white;
-  }
-  .custom-btn:hover {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.custom-btn:hover {
     background-color: #255c6f;
     color: white;
-  }
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
 
-  /* Smooth entry animation */
-  .animate-fade-in {
+.custom-btn:active {
+    transform: scale(0.95);
+    background-color: #1f5d75;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Fade-In Effect */
+.animate-fade-in {
     animation: fadeInUp 1s ease forwards;
     opacity: 0;
     transform: translateY(20px);
-  }
+}
 
-  @keyframes fadeInUp {
+@keyframes fadeInUp {
     to {
-      opacity: 1;
-      transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0);
     }
+}
+
+/* Flight Offers Container */
+#flight-offers-section {
+    display: none; /* Initially hidden */
+    padding: 25px;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    border: 5px solid transparent;
+    border-image: linear-gradient(45deg, #30748c, #1e6f7f) 1; /* Gradient border */
+    margin-top: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+}
+
+/* Make the section visible when triggered */
+#flight-offers-section.visible {
+    display: block;
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+/* Card Styling for Flight Offers */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px); /* Lift effect */
+}
+
+/* Card Header Styling */
+.card-header {
+    background-color: #30748c;
+    color: white;
+    border-radius: 12px 12px 0 0;
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Flight Offer Text */
+.card-body {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.card-title {
+    color: #2e7d32; /* Green color for pricing */
+    font-weight: bold;
+}
+
+/* List Group Items for Flight Segments */
+.list-group-item {
+    background-color: #fff;
+    border: 2px solid #ddd;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: #333;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+    transform: translateY(-3px); /* Slight lift effect */
+}
+
+/* Alert Message Styling */
+.alert-warning {
+    font-size: 1.1rem;
+    padding: 20px;
+    background-color: #ff9800;
+    color: white;
+    border-radius: 8px;
+}
+/* footer */
+footer h3 {
+    font-family: 'Arial', sans-serif;
+    color: #30748c;
+}
+
+#pac-input {
+    border-radius: 25px;
+    padding: 10px 15px;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+#pac-input:focus {
+    border-color: #30748c;
+    box-shadow: 0 0 5px rgba(48, 116, 140, 0.5);
+}
+
+footer {
+    background-color: #f8f9fa;
+    padding: 40px 0;
+    border-top: 2px solid #30748c;
+}
+
+#map {
+    border-radius: 10px;
+    border: 3px solid #30748c;
 }
