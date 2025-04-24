@@ -195,11 +195,19 @@
 
         <div class="main-content">
             <div class="profile-card">
-                <img src="{% static 'add_user/images/user.jpg' %}" alt="User Profile" class="profile-pic">
-                <h3>{{ user.first_name }} {{ user.last_name }}</h3>
-                <p>Email: {{ user.email }}</p>
-                <button class="edit-btn">Edit Profile</button>
-            </div>
+    <img src="{% static 'add_user/images/user.jpg' %}" alt="User Profile" class="profile-pic">
+    <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+    <p>Email: {{ user.email }}</p>
+    <button class="edit-btn" onclick="toggleEditForm()">Edit Profile</button>
+</div>
+
+<div id="edit-profile-form" class="hidden">
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>
 
             <div class="suggestions">
                 <h2 class="section-title">Recommended Locations</h2>
@@ -261,6 +269,21 @@
             window.location.href = logoutUrl;
         }
     }
+   function toggleEditForm() {
+    console.log('Button clicked, toggling form visibility');
+    var editForm = document.getElementById("edit-profile-form");
+    var profileCard = document.querySelector(".profile-card");
+    
+    // Log the current visibility of the form
+    console.log('Form visibility before toggle:', editForm.classList.contains("hidden"));
+    
+    // Toggle visibility
+    editForm.classList.toggle("hidden");
+    profileCard.classList.toggle("hidden");
+    
+    // Log after toggle
+    console.log('Form visibility after toggle:', editForm.classList.contains("hidden"));
+}
 </script>
 
 </html>

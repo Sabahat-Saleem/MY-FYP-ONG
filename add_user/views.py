@@ -8,11 +8,12 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-from .forms import Travel_Registration, UserUpdateForm
+from .forms import Travel_Registration, UserUpdateForm, EditProfileForm
 from .models import Location, Event, TravelTip, Interest
 from .utils import get_duffel_schedules
+from django.core.validators import validate_email, ValidationError
 from django.conf import settings
-
+from django import forms
 User = get_user_model()
 import requests
 
@@ -100,40 +101,47 @@ def delete_data(request, id):
     
         return render(request, "add_user/confirm_delete.html", {'user': pi})
 # User = get_user_model()
+class LoginForm(forms.Form):
+    identifier = forms.CharField(max_length=255)
+    password = forms.CharField(widget=forms.PasswordInput())
+
+# In your view
 def LoginPage(request):
     if request.method == 'POST':
-        identifier = request.POST.get('identifier')  # Can be mobile number or username
-        password = request.POST.get('password')
-
-        user = None
-
-        # Check if input is a mobile number or a username
-        try:
-            if identifier.isdigit():  # Assuming mobile numbers are numeric
-                user = User.objects.get(mobile_number=identifier)
-            else:
-                user = User.objects.get(username=identifier)
-            
-            user = authenticate(request, username=user.username, password=password)
-        except User.DoesNotExist:
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            identifier = form.cleaned_data['identifier']
+            password = form.cleaned_data['password']
             user = None
 
-        if user is not None:
-            login(request, user)
-            if user.is_staff:  # Admin user
-                return redirect('/addandshow/')  # Redirect admin to admin page
-            else:
-                return redirect('dashboard_page')  # Redirect regular users to dashboard
-        else:
-            messages.error(request, 'Invalid credentials.')
+            try:
+                if identifier.isdigit():
+                    user = User.objects.get(mobile_number=identifier)
+                else:
+                    user = User.objects.get(username=identifier)
+                
+                user = authenticate(request, username=user.username, password=password)
+            except User.DoesNotExist:
+                user = None
 
-    return render(request, 'add_user/login.html')
+            if user is not None:
+                login(request, user)
+                if user.is_staff:
+                    return redirect('/addandshow/')
+                else:
+                    return redirect('dashboard_page')
+            else:
+                messages.error(request, 'Invalid username or password.')
+
+    else:
+        form = LoginForm()
+
+    return render(request, 'add_user/login.html', {'form': form})
 
 
 # views.py
 def SignupPage(request):
     if request.method == 'POST':
-        # Get form data
         first_name = request.POST.get('first_name', '').strip()
         last_name = request.POST.get('last_name', '').strip()
         mobile_number = request.POST.get('mobile_number', '').strip()
@@ -149,11 +157,11 @@ def SignupPage(request):
         if not mobile_number:
             messages.error(request, "Mobile number is required.")
             return render(request, 'add_user/signup.html')
-        
+
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
             return render(request, 'add_user/signup.html')
-        
+
         if not re.match(r'^[\d\+\-\(\)\s]+$', mobile_number):
             messages.error(request, "Invalid mobile number format.")
             return render(request, 'add_user/signup.html')
@@ -161,7 +169,13 @@ def SignupPage(request):
         if User.objects.filter(mobile_number=mobile_number).exists():
             messages.info(request, "An account with this mobile number already exists.")
             return redirect('login')
-        
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            messages.error(request, "Invalid email address.")
+            return render(request, 'add_user/signup.html')
+
         try:
             # Create user
             user = User.objects.create_user(
@@ -175,12 +189,11 @@ def SignupPage(request):
                 preferred_travel_type=preferred_travel_type,
             )
 
-            # Optional profile fields
             if hasattr(user, 'profile'):
                 user.profile.age_range = age_range
                 user.profile.budget_range = budget_range
                 user.profile.save()
-            
+
             messages.success(request, "User created successfully. Please log in.")
             return redirect('login')
 
@@ -368,3 +381,16 @@ def interest_page(request):
         'recommendations': recommendations
     })
 
+@login_required
+def edit_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('dashboard_page')
+    else:
+        form = EditProfileForm(instance=user)
+
+    return render(request, 'add_user/edit_profile.html', {'form': form})
