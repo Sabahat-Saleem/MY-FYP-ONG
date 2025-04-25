@@ -232,6 +232,11 @@ ul.list-group {
 .section-title {
     margin: 50px 0 20px;
 }
+.hotel-img {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+  }
 /* this is ending hotels styling  */
 /* footer */
 footer h3 {
