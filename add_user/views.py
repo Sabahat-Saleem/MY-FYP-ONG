@@ -9,11 +9,14 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from .forms import Travel_Registration, UserUpdateForm, EditProfileForm
-from .models import Location, Event, TravelTip, Interest
+from .models import Location, Event, TravelTip, Interest, Hotel
 from .utils import get_duffel_schedules
 from django.core.validators import validate_email, ValidationError
 from django.conf import settings
 from django import forms
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import HotelSerializer
 User = get_user_model()
 import requests
 
@@ -213,9 +216,11 @@ def user_logout(request):
 
 def Home(request):
      offers = get_duffel_schedules()  # Use your utility function
- 
+     hotels = Hotel.objects.all()
      context = {
-         'flight_offers': offers
+         'flight_offers': offers,
+         'hotels': hotels,
+         
      }
  
      return render(request, 'add_user/home.html', context)
@@ -394,3 +399,13 @@ def edit_profile(request):
         form = EditProfileForm(instance=user)
 
     return render(request, 'add_user/edit_profile.html', {'form': form})
+
+class HotelListAPIView(APIView):
+    def get(self, request):
+        city = request.GET.get('city')
+        hotels = Hotel.objects.all()
+        if city:
+            hotels = hotels.filter(city__iexact=city)
+        serializer = HotelSerializer(hotels, many=True)
+        return Response(serializer.data)
+    

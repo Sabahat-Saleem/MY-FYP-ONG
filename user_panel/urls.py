@@ -16,6 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+
+from django.conf import settings
+from django.conf.urls.static import static
 from add_user import views 
 
 
@@ -33,4 +36,5 @@ urlpatterns = [
     path('interests/', views.get_interest_info, name='get_interest_info'),
     path('interest_page/', views.interest_page, name='interest_page'),
     path('edit-profile/', views.edit_profile, name='edit_profile'),
-]
+    path('api/hotels/', views.HotelListAPIView.as_view(), name='hotel-list'),
+]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

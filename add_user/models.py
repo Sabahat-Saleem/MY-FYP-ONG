@@ -83,3 +83,15 @@ class UserActivity(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     interest = models.ForeignKey(Interest, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class Hotel(models.Model):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100, default="Unknown")
+    description = models.TextField(default="No description available")
+    price_per_night = models.DecimalField(max_digits=8, decimal_places=2)
+    available_rooms = models.IntegerField(default=10)
+    rating = models.FloatField()
+    image = models.ImageField(upload_to='hotel_images/', null=True, blank=True)  # New field
+
+    def __str__(self):
+        return self.name
