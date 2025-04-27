@@ -45,14 +45,15 @@ class Travel_Registration(forms.ModelForm):
         
         return cleaned_data
 
-class UserUpdateForm(forms.ModelForm):
+class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'mobile_number']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'mobile_number': forms.TextInput(attrs={'class': 'form-control'}),  # Corrected widget
         }
 
 class InterestSearchForm(forms.Form):
@@ -61,9 +62,19 @@ class InterestSearchForm(forms.Form):
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']  # Add other fields as necessary
+        fields = ['first_name', 'last_name', 'email', 'preferred_season', 'preferred_travel_type']
+
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'preferred_season': forms.Select(attrs={'class': 'form-control'}),
+            'preferred_travel_type': forms.Select(attrs={'class': 'form-control'}),
         }
+
+class UserUpdateForm(forms.ModelForm):
+    profile_picture = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'profile_picture']

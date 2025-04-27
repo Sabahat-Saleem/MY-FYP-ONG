@@ -1,26 +1,26 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+
 class User(AbstractUser):
-    first_name= models.CharField(max_length=70, blank=False, null=False)
-    last_name= models.CharField(max_length=70, blank=False, null=False)   # Optional
-    email = models.EmailField(unique=True)  # Ensure email is unique
-    mobile_number = models.CharField(max_length=15, unique=True) # blank for temproray 
+    first_name = models.CharField(max_length=70, blank=False, null=False)
+    last_name = models.CharField(max_length=70, blank=False, null=False)
+    email = models.EmailField(unique=True)
+    mobile_number = models.CharField(max_length=15, unique=True)
     TRAVEL_SEASONS = [
         ('Winter', 'Winter'),
         ('Spring', 'Spring'),
         ('Summer', 'Summer'),
         ('Autumn', 'Autumn'),
     ]
-    
     TRAVEL_TYPES = [
         ('Adventure', 'Adventure'),
         ('Relaxation', 'Relaxation'),
         ('Cultural', 'Cultural'),
         ('Wildlife', 'Wildlife'),
     ]
-    
     preferred_season = models.CharField(max_length=10, choices=TRAVEL_SEASONS, null=True, blank=True)
     preferred_travel_type = models.CharField(max_length=15, choices=TRAVEL_TYPES, null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)  # Add this field
 
     def full_name(self):
         return f"{self.first_name} {self.last_name}".strip()

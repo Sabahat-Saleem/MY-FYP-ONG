@@ -35,6 +35,5 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('interests/', views.get_interest_info, name='get_interest_info'),
     path('interest_page/', views.interest_page, name='interest_page'),
-    path('edit-profile/', views.edit_profile, name='edit_profile'),
     path('api/hotels/', views.HotelListAPIView.as_view(), name='hotel-list'),
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

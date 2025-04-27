@@ -8,7 +8,7 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-from .forms import Travel_Registration, UserUpdateForm, EditProfileForm
+from .forms import Travel_Registration, UserUpdateForm, EditProfileForm, UserEditForm
 from .models import Location, Event, TravelTip, Interest, Hotel
 from .utils import get_duffel_schedules
 from django.core.validators import validate_email, ValidationError
@@ -233,23 +233,31 @@ def dashboard_page(request):
 
     # Recommendations based on user's preferred season
     recommended_locations = Location.objects.filter(season=user.preferred_season)
-
-    # Upcoming events based on user's preferred season
     upcoming_events = Event.objects.filter(season=user.preferred_season)
-
-    # Travel tips based on both preferred season and travel type
     travel_tips = TravelTip.objects.filter(
         season=user.preferred_season,
         travel_type=user.preferred_travel_type
     )
 
+    # Handle the form for editing the profile
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, request.FILES, instance=user)  # Include request.FILES for file uploads
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('dashboard_page')
+    else:
+        form = UserUpdateForm(instance=user)
+
     context = {
         'recommended_locations': recommended_locations,
         'upcoming_events': upcoming_events,
         'travel_tips': travel_tips,
+        'form': form,  # Pass the form to the template
     }
 
     return render(request, 'add_user/dashboard.html', context)
+
 
 @login_required
 def update_profile(request):
@@ -386,20 +394,6 @@ def interest_page(request):
         'recommendations': recommendations
     })
 
-@login_required
-def edit_profile(request):
-    user = request.user
-    if request.method == 'POST':
-        form = EditProfileForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your profile has been updated successfully!')
-            return redirect('dashboard_page')
-    else:
-        form = EditProfileForm(instance=user)
-
-    return render(request, 'add_user/edit_profile.html', {'form': form})
-
 class HotelListAPIView(APIView):
     def get(self, request):
         city = request.GET.get('city')
@@ -408,4 +402,4 @@ class HotelListAPIView(APIView):
             hotels = hotels.filter(city__iexact=city)
         serializer = HotelSerializer(hotels, many=True)
         return Response(serializer.data)
-    
+
