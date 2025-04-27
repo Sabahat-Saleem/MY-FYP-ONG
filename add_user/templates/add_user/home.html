@@ -51,7 +51,7 @@
 
         <!-- Main Content -->
         <div class="col-12 col-md-10 text-center">
-            <h2 class="fw-bold text-primary mb-3">Find Your Recommended Destinations</h2>
+            <h2 class="fw-bold" style="color: #30748c;">Find Your Recommended Destinations</h2>
             <p class="text-muted mb-4">Explore places tailored to your interests. Just type in what you love — from mountains to beaches — and we’ll guide you to the perfect spot.</p>
 
             <form id="interest-form" class="d-flex flex-column align-items-center gap-3">
@@ -136,13 +136,13 @@
       </div>
     {% endif %}
   </div>
-  {% block content%}
+
 <section id="hotels-section" class="py-5">
     <div class="container">
         <div class="row align-items-center justify-content-between">
             <!-- Text Section (Appealing Content) -->
             <div class="col-md-6 mb-4 mb-md-0">
-                <h2 class="fw-bold text-primary mb-3">🏨 Discover Your Dream Hotel</h2>
+                <h2 class="fw-bold" style="color: #30748c;">🏨 Discover Your Dream Hotel</h2>
                 <p class="text-muted mb-3">
                     Looking for a luxurious stay or a budget-friendly getaway? We’ve got the best hotel deals for you. 
                     From beachfront resorts to city center accommodations, find the perfect spot to relax and unwind during your travels.
@@ -151,7 +151,7 @@
                     Whether you're traveling for business or leisure, explore hotels with excellent amenities, great reviews, and unbeatable prices. 
                     Click below to find more!
                 </p>
-                <button class="btn btn-primary btn-lg" onclick="toggleHotelInfo()">View Hotels</button>
+                <button class="btn custom-btn mt-3" onclick="toggleHotelInfo()">View Hotels</button>
             </div>
 
             <!-- Image Section -->
@@ -167,25 +167,24 @@
     <h2 class="text-center text-primary mb-5">🏨 Available Hotels</h2>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for hotel in hotels %}
-<div class="col">
-    <div class="card shadow-lg h-100 border-0" style="border-left: 5px solid #30748c;">
-        <div class="card-body">
-            <!-- Hotel Image -->
-            <img src="/media/hotel_images/{{ hotel.image }}" class="card-img-top img-fluid hotel-img" alt="{{ hotel.name }}">
-            <h5 class="card-title text-success">{{ hotel.name }}</h5>
-            <p class="card-text"><strong>Location:</strong> {{ hotel.location }}</p>
-            <p class="card-text"><strong>Price per Night:</strong> Rs. {{ hotel.price_per_night }}</p>
-            <p class="card-text"><strong>Rating:</strong> ⭐ {{ hotel.rating }} / 5</p>
-            <p class="card-text">{{ hotel.description }}</p>
+        <div class="col">
+            <div class="card shadow-lg h-100 border-0" style="border-left: 5px solid #30748c;">
+                <div class="card-body">
+                    <!-- Hotel Image -->
+                    <img src="/media/hotel_images/{{ hotel.image }}" class="card-img-top img-fluid hotel-img" alt="{{ hotel.name }}">
+                    <h5 class="card-title text-success">{{ hotel.name }}</h5>
+                    <p class="card-text"><strong>Location:</strong> {{ hotel.location }}</p>
+                    <p class="card-text"><strong>Price per Night:</strong> Rs. {{ hotel.price_per_night }}</p>
+                    <p class="card-text"><strong>Rating:</strong> ⭐ {{ hotel.rating }} / 5</p>
+                    <p class="card-text">{{ hotel.description }}</p>
+                </div>
+            </div>
         </div>
+        {% empty %}
+        <p>No hotels available at the moment.</p>
+        {% endfor %}
     </div>
 </div>
-{% empty %}
-<p>No hotels available at the moment.</p>
-{% endfor %}
-    </div>
-</div>
-  {% endblock%}
 
 <!-- Google Map Section -->
 <footer style="background-color: #f8f9fa; padding: 40px 0; border-top: 2px solid #30748c;">

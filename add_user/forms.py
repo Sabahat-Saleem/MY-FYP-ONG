@@ -48,12 +48,14 @@ class Travel_Registration(forms.ModelForm):
 class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'mobile_number']
+        fields = ['first_name', 'last_name', 'email', 'mobile_number', 'preferred_season']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'mobile_number': forms.TextInput(attrs={'class': 'form-control'}),  # Corrected widget
+            'mobile_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'preferred_season': forms.TextInput(attrs={'class': 'form-control'}),
+            'preferred_travel_type': forms.TextInput(attrs={'class': 'form-control'}),  # Corrected widget
         }
 
 class InterestSearchForm(forms.Form):
@@ -74,7 +76,22 @@ class EditProfileForm(forms.ModelForm):
 
 class UserUpdateForm(forms.ModelForm):
     profile_picture = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'form-control'}))
+    preferred_season = forms.ChoiceField(
+        choices=User.TRAVEL_SEASONS,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+    preferred_travel_type = forms.ChoiceField(
+        choices=User.TRAVEL_TYPES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'profile_picture']
+        fields = ['first_name', 'last_name', 'email', 'profile_picture', 'preferred_season', 'preferred_travel_type']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }

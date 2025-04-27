@@ -6,346 +6,239 @@
     <title>User Dashboard</title>
     <link rel="stylesheet" href="{% static 'add_user/css/sidebardash.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
+    
     <style>
-        /* Existing sidebar styles - keep these */
-        .hidden { display: none; }
-        .sidebar {
-            width: 250px;
-            background-color: #2C3E50;
-            color: white;
-            position: fixed;
-            height: 100%;
-            transition: width 0.3s ease-in-out;
-        }
-        .sidebar ul { list-style: none; padding: 0; }
-        .sidebar ul li {
-            padding: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-        .sidebar ul li i { margin-right: 10px; }
-        .sidebar ul li:hover { background-color: #34495E; }
-        .sidebar.collapsed { width: 60px; }
-        .sidebar.collapsed .sidebar-text { display: none; }
+      .hidden { display: none; }
+    /* Sidebar */
+    .sidebar {
+        width: 250px;
+        background-color: #34495E; /* Dark Blue-Gray */
+        color: white;
+        position: fixed;
+        height: 100%;
+        transition: width 0.3s ease-in-out;
+    }
 
-        /* Main Content Area */
-        .main-content {
-            margin-left: 250px;
-            transition: margin-left 0.3s ease-in-out;
-            padding: 20px;
-            display: flex; /* Use flexbox for layout */
-        }
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
 
-        .sidebar.collapsed + .main-content {
-            margin-left: 60px;
-        }
+    .sidebar ul li {
+        padding: 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
 
-        /* Right Panel for Profile Card and Suggestions */
-        .right-panel {
-            flex: 1; /* Take remaining width */
-            display: flex;
-            flex-direction: column; /* Stack profile and suggestions */
-            align-items: flex-end; /* Align profile card to the right */
-            padding-left: 20px; /* Add some spacing from the suggestions */
-        }
+    .sidebar ul li i {
+        margin-right: 10px;
+    }
 
-        /* Profile Card Container */
-        .profile-container {
-            width: 300px; /* Fixed width for the profile card */
-            margin-bottom: 20px; /* Space below the profile card */
-            display: flex;
-            flex-direction: column;
-            align-items: stretch; /* Make items take full width */
-        }
+    .sidebar ul li:hover {
+        background-color: #2C3E50; /* Slightly lighter blue-gray */
+    }
 
-        /* Updated Profile Card Styles */
-        .profile-card {
-            background-color: #343a40; /* Dark background */
-            color: #fff; /* White text */
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-            text-align: center;
-            border-radius: 15px; /* Rounded corners */
-            position: relative;
-            width: 100%;
-            overflow: hidden; /* Clip the circular background */
-        }
+    .sidebar.collapsed {
+        width: 60px;
+    }
 
-        .profile-card::before {
-            content: "";
-            position: absolute;
-            top: -60px; /* Adjust as needed to position the circle */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px; /* Adjust size of the circle */
-            height: 150px; /* Adjust size of the circle */
-            background-color: #e83e8c; /* Pink circular background */
-            border-radius: 50%;
-            z-index: -1; /* Place behind the content */
-        }
+    .sidebar.collapsed .sidebar-text {
+        display: none;
+    }
 
-        .profile-pic-container {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 15px;
-            border-radius: 50%;
-            background-color: #fff; /* White background for the image circle */
-            overflow: hidden;
-            z-index: 1; /* Ensure image is above the pink circle */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    .main-content {
+        margin-left: 250px;
+        transition: margin-left 0.3s ease-in-out;
+        padding: 20px;
+        background-color: #F7F9FB; /* Light Blue-Gray */
+    }
 
-        .profile-pic {
-            width: 80%;
-            height: 80%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+    /* Profile Card - Horizontal Layout */
+    .profile-card-horizontal {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #FFFFFF; /* White */
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        margin-bottom: 20px;
+    }
 
-        .profile-info h3 {
-            margin-top: 10px;
-            color: #e83e8c; /* Pink name */
-            font-size: 1.4em;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
+    .profile-pic-container {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 20px;
+        background-color: #F1F1F1; /* Light Gray */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-        .profile-info p {
-            color: #f8f9fa; /* Light text for email/title */
-            font-size: 0.9em;
-            margin-bottom: 10px;
-        }
+    .profile-pic {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
 
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
+    .profile-info-horizontal {
+        text-align: center;
+    }
 
-        .social-icons a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 35px;
-            height: 35px;
-            background-color: #e83e8c; /* Pink icon background */
-            color: #fff;
-            border-radius: 50%;
-            text-decoration: none;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
+    .profile-info-horizontal h3 {
+        font-size: 1.8em;
+        color: #2C3E50; /* Dark Blue-Gray */
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
 
-        .social-icons a:hover {
-            background-color: #d11a69; /* Darker pink on hover */
-        }
+    .profile-info-horizontal p {
+        font-size: 1.1em;
+        color: #555555; /* Medium Gray */
+        margin-bottom: 10px;
+    }
 
-        .social-icons .fa {
-            margin: 0; /* Adjust font awesome icon centering */
-        }
+    .edit-btn {
+        background-color: #16A085; /* Teal */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-weight: bold;
+    }
 
-        .follow-info {
-            background-color: #e83e8c; /* Pink follow info background */
-            color: #fff;
-            padding: 10px;
-            border-radius: 0 0 15px 15px; /* Rounded bottom corners */
-            font-size: 0.9em;
-            margin-top: 10px; /* Space between social icons and follow info */
-        }
+    .edit-btn:hover {
+        background-color: #1ABC9C; /* Lighter Teal */
+    }
 
-        .follow-info strong {
-            font-weight: bold;
-        }
+    .save-btn {
+        background-color: #16A085; /* Teal */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-weight: bold;
+    }
 
-        .edit-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            font-size: 14px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 100%; /* Make the edit button full width */
-            box-sizing: border-box;
-            margin-top: 10px; /* Space between profile card and edit button */
-        }
+    .save-btn:hover {
+        background-color: #1ABC9C; /* Lighter Teal */
+    }
 
-        .edit-btn:hover {
-            background-color: #0056b3;
-        }
+    /* Edit Form */
+    .edit-form {
+        background: #FFFFFF; /* White */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        animation: fadeIn 0.5s ease-in-out;
+        margin-top: 20px;
+    }
 
-        /* Adjust the edit form positioning */
-        #edit-profile-form {
-            background: #f9f9f9;
-            padding: 20px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            animation: fadeIn 0.5s ease-in-out;
-            width: 100%; /* Make it the same width as the profile card */
-            margin-top: 15px; /* Space between the button and the form */
-            box-sizing: border-box;
-        }
+    .edit-form h2 {
+        font-size: 1.8em;
+        color: #2C3E50; /* Dark Blue-Gray */
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
 
-        .edit-form h2 {
-            color: #333;
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 1.4em;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
+    .edit-form input,
+    .edit-form select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 1px solid #CCCCCC; /* Light Gray Border */
+    }
 
-        .edit-form input, .edit-form select {
-            width: calc(100% - 22px); /* Adjust for padding */
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            box-sizing: border-box; /* Ensure padding doesn't increase width */
-        }
+    /* Suggestions Section */
+    .suggestions {
+        width: 80%;
+        margin: 30px auto;
+        padding: 20px;
+        background-color: #FFFFFF; /* White */
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    }
 
-        .edit-form button.save-btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 100%; /* Make save button full width */
-            box-sizing: border-box;
-            margin-top: 10px; /* Space above the save button */
-        }
+    .section-title {
+        font-size: 1.8em;
+        color: #16A085; /* Teal */
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        border-bottom: 3px solid #1ABC9C; /* Lighter Teal */
+        padding-bottom: 5px;
+        font-weight: bold;
+    }
 
-        .edit-form button.save-btn:hover {
-            background-color: #45a049;
-        }
+    .item {
+        background-color: #F9F9F9; /* Light Gray */
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
 
-        /* Suggestions Section - on the right, below profile */
-        .suggestions {
-            width: 80%; /* Adjust width as needed */
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-            margin-top: 20px; /* Space above suggestions */
-            align-self: flex-start; /* Align to the left within the right panel */
-        }
+    .item strong {
+        font-weight: bold;
+        color: #16A085; /* Teal */
+        font-size: 1.2em;
+    }
 
-        .section-title {
-            font-size: 1.5em;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            border-bottom: 2px solid #e67e22;
-            padding-bottom: 5px;
-        }
+    .item p {
+        color: #34495E; /* Dark Blue-Gray */
+        font-size: 1em;
+        line-height: 1.6em;
+    }
 
-        .item-list {
-            list-style-type: none;
-            padding: 0;
-        }
+    .item:hover {
+        background-color: #E8F5F1; /* Light Teal */
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
 
-        .item, .tip-item {
-            background-color: #ecf0f1;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
+    .tip-item {
+        background-color: #E8F5F1; /* Light Teal */
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
 
-        .item strong, .tip-title {
-            font-weight: bold;
-            color: #16a085;
-            font-size: 1.2em;
-        }
+    .tip-title {
+        font-weight: bold;
+        color: #16A085; /* Teal */
+        font-size: 1.2em;
+    }
 
-        .item p, .tip-content {
-            color: #34495e;
-            font-size: 1em;
-            line-height: 1.6em;
-        }
+    .tip-content {
+        color: #34495E; /* Dark Blue-Gray */
+        font-size: 1em;
+        line-height: 1.6em;
+    }
 
-        .tip-content {
-            color: #7f8c8d;
-        }
-
-        .tip-item {
-            background-color: #f1f8f6;
-        }
-
-        .item-list .item:last-child, .item-list .tip-item:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Hover Effects */
-        .item:hover, .tip-item:hover {
-            background-color: #d5e6e2;
-            cursor: pointer;
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Animations - keep these */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                position: static;
-                height: auto;
-                margin-bottom: 20px;
-            }
-            .sidebar.collapsed {
-                width: 100%;
-            }
-            .sidebar.collapsed .sidebar-text {
-                display: inline;
-                margin-left: 10px;
-            }
-            .main-content {
-                margin-left: 0;
-                flex-direction: column;
-                align-items: center;
-            }
-            .right-panel {
-                width: 95%;
-                padding-left: 0;
-                align-items: stretch;
-            }
-            .profile-container {
-                width: 100%;
-                margin-bottom: 20px;
-            }
-            .suggestions {
-                width: 100%;
-                margin-top: 20px;
-            }
-        }
+    .tip-item:hover {
+        background-color: #D5F5E3; /* Lighter Green */
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
     </style>
 </head>
 
 <body>
     <div class="dashboard">
+        <!-- Sidebar -->
         <div class="sidebar">
             <button class="hamburger" style="background: transparent; font-size: 20px; color: white;" onclick="toggleSidebar()">
                 <i class="fa fa-bars"></i>
@@ -362,88 +255,82 @@
                 <li><i class="fa fa-tasks"></i> <span class="sidebar-text">Activities</span></li>
                 <li><i class="fa fa-bell"></i> <span class="sidebar-text">Notifications</span></li>
                 <li>
-                    <a href="{% url 'logout' %}" class="logout"
-                       onclick="confirmLogout(event)"
+                    <a href="{% url 'logout' %}" class="logout" 
+                       onclick="confirmLogout(event)" 
                        style="color: white; text-decoration: none; list-style: none;">
-                        <i class="fa fa-sign-out"></i>
-                        <span class="sidebar-text">Logout</span>
+                       <i class="fa fa-sign-out"></i> 
+                       <span class="sidebar-text">Logout</span>
                     </a>
                 </li>
             </ul>
         </div>
 
+        <!-- Main Content -->
         <div class="main-content">
-            <div class="right-panel">
-                <div class="profile-container">
-                    <div class="profile-card">
-                        <div class="profile-pic-container">
-                            <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}" alt="User Profile" class="profile-pic">
-                        </div>
-                        <div class="profile-info">
-                            <h3>{{ user.first_name }} {{ user.last_name }}</h3>
-                            <p>{{ user.email }}</p>
-                            <p>Developer | Designer</p>
-                        </div>
-                        <div class="social-icons">
-                            <a href="#" target="_blank"><i class="fa fa-github"></i></a>
-                            <a href="#" target="_blank"><i class="fa fa-twitter"></i></a>
-                            <a href="#" target="_blank"><i class="fa fa-youtube-play"></i></a>
-                            <a href="#" target="_blank"><i class="fa fa-linkedin"></i></a>
-                        </div>
-                        <div class="follow-info">
-                            <strong>120k</strong> Followers | <strong>10k</strong> Following
-                        </div>
-                    </div>
-                    <button class="edit-btn" onclick="toggleEditForm()">Edit Profile</button>
-                    <div id="edit-profile-form" class="edit-form hidden">
-                        <form method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <h2>Edit Your Profile</h2>
-                            {{ form.as_p }}
-                            <button type="submit" class="save-btn">Save Changes</button>
-                        </form>
-                    </div>
+            <!-- Profile Card -->
+            <div class="profile-card-horizontal">
+                <div class="profile-pic-container">
+                    <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}" alt="User Profile" class="profile-pic">
                 </div>
+                <div class="profile-info-horizontal">
+                    <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+                    <p>{{ user.email }}</p>
+                    <p>{{ user.mobile_number }}</p>
+                    <button class="edit-btn" onclick="toggleEditForm()">Edit Profile</button>
+                </div>
+            </div>
 
-                <div class="suggestions">
-                    <h2 class="section-title">Recommended Locations</h2>
-                    {% if recommended_locations %}
-                        <ul class="item-list">
-                            {% for location in recommended_locations %}
-                                <li class="item">
-                                    <strong>{{ location.name }}</strong>
-                                    <p>{{ location.description }}</p>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No location recommendations available.</p>
-                    {% endif %}
+            <!-- Edit Profile Form -->
+            <div id="edit-profile-form" class="edit-form hidden">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h2>Edit Your Profile</h2>
+                    {{ form.as_p }}
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </form>
+            </div>
 
-                    <h2 class="section-title">Upcoming Events</h2>
-                    {% if upcoming_events %}
-                        <ul class="item-list">
-                            {% for event in upcoming_events %}
-                                <li class="item">
-                                    <strong>{{ event.name }}</strong> on {{ event.date|date:"F j, Y" }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No event recommendations available.</p>
-                    {% endif %}
+            <!-- Suggestions Section -->
+            <div class="suggestions">
+                <h2 class="section-title">Recommended Locations</h2>
+                {% if recommended_locations %}
+                    <ul class="item-list">
+                        {% for location in recommended_locations %}
+                            <li class="item">
+                                <strong>{{ location.name }}</strong>
+                                <p>{{ location.description }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No location recommendations available.</p>
+                {% endif %}
 
-                    <h2 class="section-title">Travel Tips</h2>
-            <ul class="item-list">
-                {% for tip in travel_tips %}
-                    <li class="tip-item">
-                        <strong class="tip-title">{{ tip.title }}</strong>
-                        <p class="tip-content">{{ tip.content }}</p>
-                    </li>
-                {% empty %}
-                    <li class="item">No travel tips available for your preferences yet.</li>
-                {% endfor %}
-            </ul>
+                <h2 class="section-title">Upcoming Events</h2>
+                {% if upcoming_events %}
+                    <ul class="item-list">
+                        {% for event in upcoming_events %}
+                            <li class="item">
+                                <strong>{{ event.name }}</strong> on {{ event.date|date:"F j, Y" }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No event recommendations available.</p>
+                {% endif %}
+
+                <h2 class="section-title">Travel Tips</h2>
+                <ul class="item-list">
+                    {% for tip in travel_tips %}
+                        <li class="tip-item">
+                            <strong class="tip-title">{{ tip.title }}</strong>
+                            <p class="tip-content">{{ tip.content }}</p>
+                        </li>
+                    {% empty %}
+                        <li class="item">No travel tips available for your preferences yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
 </body>
