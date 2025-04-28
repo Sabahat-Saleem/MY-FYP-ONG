@@ -29,13 +29,15 @@ class User(AbstractUser):
         return self.full_name() or "Unnamed User"
 
 class Location(models.Model):
-    name = models.CharField(max_length=100)
-    season = models.CharField(max_length=10, choices=User.TRAVEL_SEASONS)
-    travel_type = models.CharField(max_length=15, choices=User.TRAVEL_TYPES)
-    description = models.TextField()
+    name = models.CharField(max_length=255)
+    season = models.CharField(max_length=50, choices=[('Winter', 'Winter'), ('Spring', 'Spring'), ('Summer', 'Summer'), ('Autumn', 'Autumn')])
+    image = models.ImageField(upload_to='locations/')
+    activities = models.TextField(default="No activities available") 
 
-    def __str__(self):
-        return self.name
+class Destination(models.Model):
+    name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='locations/')
+    activities = models.TextField()  # Comma-separated activities
 
 class Event(models.Model):
     name = models.CharField(max_length=255)

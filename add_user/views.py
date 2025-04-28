@@ -19,6 +19,7 @@ from rest_framework.response import Response
 from .serializers import HotelSerializer
 User = get_user_model()
 import requests
+import datetime
 
 def add_show(request):
     if request.method == 'POST':
@@ -215,15 +216,23 @@ def user_logout(request):
 
 
 def Home(request):
-     offers = get_duffel_schedules()  # Use your utility function
-     hotels = Hotel.objects.all()
-     context = {
-         'flight_offers': offers,
-         'hotels': hotels,
-         
-     }
- 
-     return render(request, 'add_user/home.html', context)
+    offers = get_duffel_schedules()  # Fetch flight offers
+    hotels = Hotel.objects.all()      # Fetch all hotels
+    season = get_current_season()     # Get current season
+
+    seasonal_destinations = Location.objects.filter(season=season)  # Fetch destinations for the season
+
+    for destination in seasonal_destinations:
+        destination.activities_list = destination.activities.split(',')
+
+    context = {
+        'flight_offers': offers,
+        'hotels': hotels,
+        'seasonal_destinations': seasonal_destinations,
+        'current_season': season,
+    }
+    
+    return render(request, 'add_user/home.html', context)
 
  
 # @login_required
@@ -403,3 +412,13 @@ class HotelListAPIView(APIView):
         serializer = HotelSerializer(hotels, many=True)
         return Response(serializer.data)
 
+def get_current_season():
+    month = datetime.datetime.now().month
+    if month in [12, 1, 2]:
+        return 'Winter'
+    elif month in [3, 4, 5]:
+        return 'Spring'
+    elif month in [6, 7, 8]:
+        return 'Summer'
+    else:
+        return 'Autumn'

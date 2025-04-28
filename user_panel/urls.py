@@ -36,4 +36,7 @@ urlpatterns = [
     path('interests/', views.get_interest_info, name='get_interest_info'),
     path('interest_page/', views.interest_page, name='interest_page'),
     path('api/hotels/', views.HotelListAPIView.as_view(), name='hotel-list'),
-]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

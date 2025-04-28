@@ -74,6 +74,29 @@
     </div>
 </div>
 </div>
+<!-- Seasonal DEstination -->
+<h1 style="text-align: center; font-size: 44px; color: #2c3e50; font-family: 'Poppins', sans-serif; margin-bottom: 40px;">
+    Explore Top Destinations for {{ current_season }}
+</h1>
+
+<div class="destination-gallery">
+    {% for destination in seasonal_destinations %}
+        <div class="destination-item">
+            <div class="destination-bg" style="background-image: url('{{ destination.image.url }}');"></div>
+            <div class="destination-content">
+                <h2>{{ destination.name }}</h2>
+                <div class="activities">
+                    {% for activity in destination.activities_list %}
+                        <span class="activity-badge">{{ activity }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="no-data">No destinations available for this season yet!</p>
+    {% endfor %}
+</div>
+
 <!-- Section: Explore Flights -->
 <section class="py-5 bg-light">
     <div class="container">
