@@ -8,7 +8,7 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-from .forms import Travel_Registration, UserUpdateForm, EditProfileForm, UserEditForm
+from .forms import Travel_Registration, UserUpdateForm, EditProfileForm, UserEditForm, TravelSchedule, ScheduleEntryForm, TravelScheduleForm
 from .models import Location, Event, TravelTip, Interest, Hotel
 from .utils import get_duffel_schedules
 from django.core.validators import validate_email, ValidationError
@@ -236,49 +236,72 @@ def Home(request):
 
  
 # @login_required
+
 @login_required
 def dashboard_page(request):
     user = request.user
 
-    # Recommendations based on user's preferred season
+    # Fetch recommended locations based on the user's preferred season
     recommended_locations = Location.objects.filter(season=user.preferred_season)
-    upcoming_events = Event.objects.filter(season=user.preferred_season)
+
+    # Fetch travel tips based on the user's preferences
     travel_tips = TravelTip.objects.filter(
         season=user.preferred_season,
         travel_type=user.preferred_travel_type
     )
-
-    # Handle the form for editing the profile
     if request.method == 'POST':
-        form = UserUpdateForm(request.POST, request.FILES, instance=user)  # Include request.FILES for file uploads
+        form = UserEditForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            messages.success(request, "Profile updated successfully!")
             return redirect('dashboard_page')
     else:
-        form = UserUpdateForm(instance=user)
+        form = UserEditForm(instance=user)
+    # Fetch the user's travel schedules
+    schedules = TravelSchedule.objects.filter(user=user)
+    schedule_form = TravelScheduleForm()
+    entry_form = ScheduleEntryForm()
 
+    if request.method == 'POST':
+        if 'create_schedule' in request.POST:
+            schedule_form = TravelScheduleForm(request.POST)
+            if schedule_form.is_valid():
+                schedule = schedule_form.save(commit=False)
+                schedule.user = user
+                schedule.save()
+                return redirect('dashboard_page')
+        elif 'add_entry' in request.POST:
+            entry_form = ScheduleEntryForm(request.POST)
+            schedule_id = request.POST.get('schedule_id')
+            schedule = TravelSchedule.objects.get(id=schedule_id, user=user)
+            if entry_form.is_valid():
+                entry = entry_form.save(commit=False)
+                entry.schedule = schedule
+                entry.save()
+                return redirect('dashboard_page')
+    upcoming_events = Event.objects.filter(
+        season=user.preferred_season,  # Only events after the current date
+    )
     context = {
         'recommended_locations': recommended_locations,
-        'upcoming_events': upcoming_events,
         'travel_tips': travel_tips,
-        'form': form,  # Pass the form to the template
+        'upcoming_events': upcoming_events,
+        'form': form,
+        'schedules': schedules,
+        'schedule_form': schedule_form,
+        'entry_form': entry_form,
     }
-
     return render(request, 'add_user/dashboard.html', context)
 
 
-@login_required
 def update_profile(request):
-    if request.method == "POST":
-        form = UserUpdateForm(request.POST, instance=request.user)
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, "Profile updated successfully!")
-            return redirect('dashboard')
+            return redirect('profile')
     else:
         form = UserUpdateForm(instance=request.user)
-
+    
     return render(request, 'update_profile.html', {'form': form})
 
 def users(request):
@@ -422,3 +445,31 @@ def get_current_season():
         return 'Summer'
     else:
         return 'Autumn'
+    
+@login_required
+def create_schedule(request):
+    if request.method == 'POST':
+        form = TravelScheduleForm(request.POST)
+        if form.is_valid():
+            schedule = form.save(commit=False)
+            schedule.user = request.user
+            schedule.save()
+            return redirect('add_schedule_entry', schedule_id=schedule.id)
+    else:
+        form = TravelScheduleForm()
+    return render(request, 'add_user/create_schedule.html', {'form': form})
+
+@login_required
+def add_schedule_entry(request, schedule_id):
+    schedule = TravelSchedule.objects.get(id=schedule_id, user=request.user)
+    if request.method == 'POST':
+        form = ScheduleEntryForm(request.POST)
+        if form.is_valid():
+            entry = form.save(commit=False)
+            entry.schedule = schedule
+            entry.save()
+            return redirect('add_schedule_entry', schedule_id=schedule.id)
+    else:
+        form = ScheduleEntryForm()
+    entries = schedule.entries.all()
+    return render(request, 'add_user/add_schedule_entry.html', {'form': form, 'entries': entries, 'schedule': schedule})

@@ -97,3 +97,20 @@ class Hotel(models.Model):
 
     def __str__(self):
         return self.name
+    
+class TravelSchedule(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+class ScheduleEntry(models.Model):
+    schedule = models.ForeignKey(TravelSchedule, on_delete=models.CASCADE, related_name='entries')
+    date = models.DateField()
+    location = models.CharField(max_length=100)
+    activity = models.TextField()
+    accommodation = models.CharField(max_length=200, blank=True, null=True)
+

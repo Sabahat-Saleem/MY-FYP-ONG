@@ -233,6 +233,93 @@
         transform: scale(1.05);
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
+    /* schedule of travel */ .form-container {
+        background-color: #f7f7f7;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Form fields */
+    .form-container input, .form-container select, .form-container textarea {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 16px;
+        width: 100%;
+        margin-bottom: 15px;
+        transition: border 0.3s ease-in-out, box-shadow 0.3s ease;
+    }
+
+    /* Focus effect */
+    .form-container input:focus, .form-container select:focus, .form-container textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+    }
+
+    /* Title and section headers */
+    .section-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    /* Submit buttons */
+    .btn-gradient {
+        background: linear-gradient(45deg, #007bff, #00d4ff);
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        color: white;
+        border-radius: 25px;
+        width: 100%;
+        transition: transform 0.2s ease-in-out, background-color 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+        transform: scale(1.05);
+        background-color: #005bb5;
+    }
+
+    /* Card for each schedule */
+    .schedule-card {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Card header */
+    .schedule-card .card-header {
+        border-radius: 10px 10px 0 0;
+        background-color: #007bff;
+    }
+
+    /* Entry item details */
+    .entry-item {
+        background-color: #f0f8ff;
+        border-left: 5px solid #007bff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .entry-item strong {
+        color: #333;
+    }
+
+    /* Spacing for entries */
+    .entry-item + .entry-item {
+        margin-top: 15px;
+    }
+
+    /* Empty state text */
+    .text-muted {
+        font-size: 1.1rem;
+        color: #6c757d;
+    }
+
+
     </style>
 </head>
 
@@ -285,7 +372,18 @@
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <h2>Edit Your Profile</h2>
+
+                    <!-- Display Current Profile Picture -->
+                    {% if user.profile_picture %}
+                        <div class="mb-3">
+                            <label>Current Profile Picture:</label><br>
+                            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" style="width: 150px; height: 150px; border-radius: 50%;">
+                        </div>
+                    {% endif %}
+
+                    <!-- Render the Form Fields -->
                     {{ form.as_p }}
+
                     <button type="submit" class="save-btn">Save Changes</button>
                 </form>
             </div>
@@ -330,6 +428,70 @@
                         <li class="item">No travel tips available for your preferences yet.</li>
                     {% endfor %}
                 </ul>
+
+               <!-- Travel Schedule Section -->
+<section class="schedule-section" style="padding: 40px; background-color: #f9f9f9; font-family: 'Segoe UI', sans-serif;">
+    <!-- Create Schedule -->
+    <div style="background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 40px;">
+        <h2 style="font-size: 26px; color: #2c3e50; margin-bottom: 20px;">🗓️ Create a New Travel Schedule</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                {{ schedule_form.as_p }}
+            </div>
+            <button type="submit" name="create_schedule" style="margin-top: 20px; background-color: #1abc9c; border: none; color: white; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                ➕ Create Schedule
+            </button>
+        </form>
+    </div>
+
+    <!-- Your Schedules -->
+    <div>
+        <h2 style="font-size: 26px; color: #2c3e50; margin-bottom: 20px;">📅 Your Travel Schedules</h2>
+        {% for schedule in schedules %}
+            <div style="background-color: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); margin-bottom: 30px;">
+                <div style="border-bottom: 1px solid #e0e0e0; margin-bottom: 20px;">
+                    <h3 style="font-size: 22px; color: #34495e;">{{ schedule.title }}</h3>
+                    <p style="color: #888;">📅 {{ schedule.start_date }} → {{ schedule.end_date }}</p>
+                </div>
+
+                <!-- Entries -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-size: 18px; color: #2c3e50; margin-bottom: 10px;">📍 Schedule Entries</h4>
+                    {% for entry in schedule.entries.all %}
+                        <div style="padding: 15px; background-color: #f1f1f1; border-radius: 8px; margin-bottom: 10px;">
+                            <p><strong>Date:</strong> {{ entry.date }}</p>
+                            <p><strong>Location:</strong> {{ entry.location }}</p>
+                            <p><strong>Activity:</strong> {{ entry.activity }}</p>
+                            <p><strong>Accommodation:</strong> {{ entry.accommodation }}</p>
+                        </div>
+                    {% empty %}
+                        <p style="color: #999;">No entries yet.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Add Entry Form -->
+                <div style="background-color: #fdfdfd; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px;">
+                    <h4 style="font-size: 18px; color: #34495e; margin-bottom: 15px;">➕ Add New Entry</h4>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            {{ entry_form.as_p }}
+                        </div>
+                        <input type="hidden" name="schedule_id" value="{{ schedule.id }}">
+                        <button type="submit" name="add_entry" style="margin-top: 20px; background-color: #3498db; border: none; color: white; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                            Add Entry
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <p style="color: #777;">No travel schedules created yet.</p>
+        {% endfor %}
+    </div>
+</section>
+
+
             </div>
         </div>
     </div>
