@@ -473,3 +473,10 @@ def add_schedule_entry(request, schedule_id):
         form = ScheduleEntryForm()
     entries = schedule.entries.all()
     return render(request, 'add_user/add_schedule_entry.html', {'form': form, 'entries': entries, 'schedule': schedule})
+
+
+def delete_schedule(request, schedule_id):
+    if request.method == 'POST':
+        schedule = get_object_or_404(TravelSchedule, pk=schedule_id)
+        schedule.delete()
+    return redirect('your_dashboard_view_name')

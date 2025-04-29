@@ -38,6 +38,59 @@
         Your browser does not support the video tag.
     </video>
 </div>
+<section class="features-section" style="padding: 60px 20px; background-color: #f4f4f4; font-family: 'Segoe UI', sans-serif;">
+    <div class="container" style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: #2c3e50; font-weight: 700; text-align: center; margin-bottom: 40px;">What We Offer</h2>
+        <p style="font-size: 18px; color: #555; text-align: center; margin-bottom: 60px;">Explore the unique features of our Online Tourist Guide and plan your perfect trip!</p>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center;">
+
+            <!-- Feature 1: Interactive Destination Maps -->
+            <div class="feature" style="background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); max-width: 320px; text-align: center; display: flex; flex-direction: column; height: 400px;">
+                <img src="{% static 'add_user/images/maps.jpeg' %}" alt="Destination Maps" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="font-size: 24px; color: #2c3e50; margin-bottom: 15px;">Interactive Destination Maps</h3>
+                <p style="font-size: 16px; color: #777; flex-grow: 1;">Navigate top tourist attractions with our user-friendly map interface. Explore your dream locations effortlessly.</p>
+            </div>
+
+            <!-- Feature 2: Personalized Travel Schedules -->
+            <div class="feature" style="background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); max-width: 320px; text-align: center; display: flex; flex-direction: column; height: 400px; overflow: hidden;">
+                <img src="{% static 'add_user/images/schedules.jpg' %}" alt="Personalized Travel Schedules" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; flex-shrink: 0;">
+                <h3 style="font-size: 20px; color: #2c3e50; margin-bottom: 10px;">Personalized Travel Schedules</h3>
+                <p style="font-size: 15px; color: #555; flex-grow: 1;">Create and manage your travel plans based on season, interests, and preferences. Stay organized and stress-free.</p>
+            </div>
+
+            <!-- Feature 3: Season-Based Recommendations -->
+            <div class="feature" style="background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); max-width: 320px; text-align: center; display: flex; flex-direction: column; height: 400px;">
+                <img src="{% static 'add_user/images/recommendation.jpeg' %}" alt="Season-Based Recommendations" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="font-size: 24px; color: #2c3e50; margin-bottom: 15px;">Season-Based Recommendations</h3>
+                <p style="font-size: 16px; color: #777; flex-grow: 1;">Receive curated travel tips and destinations ideal for your chosen travel season. Plan your trip at the perfect time.</p>
+            </div>
+
+            <!-- Feature 4: Top Hotel Listings -->
+            <div class="feature" style="background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); max-width: 320px; text-align: center; display: flex; flex-direction: column; height: 400px;">
+                <img src="{% static 'add_user/images/hotels.jpg' %}" alt="Top Hotel Listings" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px; flex-shrink: 0;">
+                <h3 style="font-size: 24px; color: #2c3e50; margin-bottom: 15px; flex-shrink: 0;">Top Hotel Listings</h3>
+                <p style="font-size: 16px; color: #777; margin-top: 0; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Discover recommended hotels with high ratings and scenic views, across Pakistan. Make your stay unforgettable.</p>
+            </div>
+
+            <!-- Feature 5: Live Flight Information -->
+            <div class="feature" style="background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); max-width: 320px; text-align: center; display: flex; flex-direction: column; height: 400px;">
+                <img src="{% static 'add_user/images/flights.jpg' %}" alt="Live Flight Information" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="font-size: 24px; color: #2c3e50; margin-bottom: 15px;">Live Flight Information</h3>
+                <p style="font-size: 16px; color: #777; flex-grow: 1;">Access Duffel-powered live flight data to ensure timely and smooth travel. Stay updated with the latest flight schedules.</p>
+            </div>
+
+            <!-- Feature 6: Smart User Dashboard -->
+            <div class="feature" style="background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); max-width: 320px; text-align: center; display: flex; flex-direction: column; height: 400px;">
+                <img src="{% static 'add_user/images/dashboard.jpg' %}" alt="Smart User Dashboard" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="font-size: 24px; color: #2c3e50; margin-bottom: 15px;">Smart User Dashboard</h3>
+                <p style="font-size: 16px; color: #777; flex-grow: 1;">Track your favorite destinations, tips, and schedules—all in one place. Simplifying travel planning for you.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
 
 <!-- Search Form Section -->
 <div class="container my-5 position-relative">
@@ -75,7 +128,7 @@
 </div>
 </div>
 <!-- Seasonal DEstination -->
-<h1 style="text-align: center; font-size: 44px; color: #2c3e50; font-family: 'Poppins', sans-serif; margin-bottom: 40px;">
+<h1 style="text-align: center; font-size: 40px; color: #2c3e50; font-family: 'Poppins', sans-serif; margin-bottom: 40px;">
     Explore Top Destinations for {{ current_season }}
 </h1>
 

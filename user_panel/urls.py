@@ -36,6 +36,7 @@ urlpatterns = [
     path('interests/', views.get_interest_info, name='get_interest_info'),
     path('interest_page/', views.interest_page, name='interest_page'),
     path('api/hotels/', views.HotelListAPIView.as_view(), name='hotel-list'),
+    path('schedule/delete/<int:schedule_id>/', views.delete_schedule, name='delete_schedule'),
 ]
 
 if settings.DEBUG:
