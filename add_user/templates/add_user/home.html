@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'add_user/css/navbar.css' %}"> 
     <link rel="stylesheet" href="{% static 'add_user/css/home.css' %}">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
@@ -23,10 +24,10 @@
         <ul class="navbar-nav ml-auto">
             <div class="hori-selector"><div class="left"></div><div class="right"></div></div>
             <li class="nav-item"><a class="nav-link" href="{% url 'dashboard_page' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li class="nav-item active"><a class="nav-link" href="javascript:void(0);"><i class="far fa-address-book"></i> Destination</a></li>
-            <li class="nav-item"><a class="nav-link" href="javascript:void(0);"><i class="fa fa-tasks"></i> Activities</a></li>
-            <li class="nav-item"><a class="nav-link" href="javascript:void(0);"><i class="far fa-calendar-alt"></i> Tips Detail</a></li>
-            <li class="nav-item"><a class="nav-link" href="#foot-map"><i class="far fa-chart-bar"></i> Map</a></li>
+            <li class="nav-item active"><a class="nav-link" href="#recommendation-section"><i class="far fa-address-book"></i> Recommendations</a></li>
+            <li class="nav-item"><a class="nav-link" href="#flights"><i class="fa fa-tasks"></i> Flights</a></li>
+            <li class="nav-item"><a class="nav-link" href="#hotels-section"><i class="far fa-calendar-alt"></i> Hotels</a></li>
+            <li class="nav-item"><a class="nav-link" href="#map"><i class="far fa-chart-bar"></i> Map</a></li>
         </ul>
     </div>
 </nav>
@@ -38,7 +39,7 @@
         Your browser does not support the video tag.
     </video>
 </div>
-<section class="features-section" style="padding: 60px 20px; background-color: #f4f4f4; font-family: 'Segoe UI', sans-serif;">
+<section class="features-section" style="padding: 60px 20px; background-color:rgb(199, 223, 209); font-family: 'Segoe UI', sans-serif;">
     <div class="container" style="max-width: 1200px; margin: 0 auto;">
         <h2 style="font-size: 36px; color: #2c3e50; font-weight: 700; text-align: center; margin-bottom: 40px;">What We Offer</h2>
         <p style="font-size: 18px; color: #555; text-align: center; margin-bottom: 60px;">Explore the unique features of our Online Tourist Guide and plan your perfect trip!</p>
@@ -86,13 +87,19 @@
                 <h3 style="font-size: 24px; color: #2c3e50; margin-bottom: 15px;">Smart User Dashboard</h3>
                 <p style="font-size: 16px; color: #777; flex-grow: 1;">Track your favorite destinations, tips, and schedules—all in one place. Simplifying travel planning for you.</p>
             </div>
-
         </div>
     </div>
+     <div class="social-icons">
+  <a href="https://twitter.com" class="twitter" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://instagram.com" class="instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+  <a href="https://facebook.com" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+ <a href="https://youtube.com" class="youtube" target="_blank"><i class="fab fa-youtube"></i></a>
+</div>
 </section>
 
 
 <!-- Search Form Section -->
+<section id="recommendation-section">
 <div class="container my-5 position-relative">
     <div class="row align-items-center">
         <!-- Left Thumbnails -->
@@ -127,7 +134,9 @@
     </div>
 </div>
 </div>
+</section>
 <!-- Seasonal DEstination -->
+
 <h1 style="text-align: center; font-size: 40px; color: #2c3e50; font-family: 'Poppins', sans-serif; margin-bottom: 40px;">
     Explore Top Destinations for {{ current_season }}
 </h1>
@@ -151,7 +160,7 @@
 </div>
 
 <!-- Section: Explore Flights -->
-<section class="py-5 bg-light">
+<section  id = "flights" class="py-5 bg-light">
     <div class="container">
       <div class="row align-items-center">
         <!-- Text Section -->

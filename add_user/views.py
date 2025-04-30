@@ -250,7 +250,7 @@ def dashboard_page(request):
         travel_type=user.preferred_travel_type
     )
     if request.method == 'POST':
-        form = UserEditForm(request.POST, instance=user)
+        form = UserEditForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
             return redirect('dashboard_page')
@@ -417,8 +417,8 @@ def interest_page(request):
     query = request.GET.get('query', '').strip().lower()
 
     # Get suggestions and recommendations based on the query
-    suggestions = get_suggestions(query)  # Your logic to fetch suggestions
-    recommendations = get_recommendations(query)  # Your logic to fetch recommendations
+    suggestions = get_suggestions(query)  # logic to fetch suggestions
+    recommendations = get_recommendations(query)  # to fetch recommendations
 
     # Return both suggestions and recommendations as a JSON response
     return JsonResponse({
