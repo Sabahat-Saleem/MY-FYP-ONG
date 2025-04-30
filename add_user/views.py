@@ -17,6 +17,7 @@ from django import forms
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import HotelSerializer
+import re
 User = get_user_model()
 import requests
 import datetime
