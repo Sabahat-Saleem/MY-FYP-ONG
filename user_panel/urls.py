@@ -38,6 +38,8 @@ urlpatterns = [
     path('interest_page/', views.interest_page, name='interest_page'),
     path('api/hotels/', views.HotelListAPIView.as_view(), name='hotel-list'),
     path('schedule/delete/<int:schedule_id>/', views.delete_schedule, name='delete_schedule'),
+    path('book-flight/', views.book_flight, name='book_flight'),
+    path('cancel-flight/', views.cancel_flight, name='cancel_flight'),
 ]
 
 if settings.DEBUG:

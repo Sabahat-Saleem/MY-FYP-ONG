@@ -9,14 +9,15 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from .forms import Travel_Registration, UserUpdateForm, EditProfileForm, UserEditForm, TravelSchedule, ScheduleEntryForm, TravelScheduleForm
-from .models import Location, Event, TravelTip, Interest, Hotel
-from .utils import get_duffel_schedules
+from .models import Location, Event, TravelTip, Interest, Hotel, ScheduleEntry
+from .utils import get_duffel_schedules, create_duffel_order, cancel_duffel_order
 from django.core.validators import validate_email, ValidationError
 from django.conf import settings
 from django import forms
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import HotelSerializer
+from .recommendations import get_recommendations
 import re
 User = get_user_model()
 import requests
@@ -217,53 +218,48 @@ def user_logout(request):
 
 
 def Home(request):
-    offers = get_duffel_schedules()  # Fetch flight offers
-    hotels = Hotel.objects.all()      # Fetch all hotels
-    season = get_current_season()     # Get current season
+    flight_data = get_duffel_schedules()
+    offers = flight_data.get("offers", [])
+    offer_request_id = flight_data.get("offer_request_id", "")
 
-    seasonal_destinations = Location.objects.filter(season=season)  # Fetch destinations for the season
+    hotels = Hotel.objects.all()
+    season = get_current_season()
+    seasonal_destinations = Location.objects.filter(season=season)
 
     for destination in seasonal_destinations:
         destination.activities_list = destination.activities.split(',')
 
     context = {
         'flight_offers': offers,
+        'offer_request_id': offer_request_id,  # ✅ pass this to the template
         'hotels': hotels,
         'seasonal_destinations': seasonal_destinations,
         'current_season': season,
     }
-    
+
     return render(request, 'add_user/home.html', context)
+
 
  
 # @login_required
 
 @login_required
+@login_required
 def dashboard_page(request):
     user = request.user
 
-    # Fetch recommended locations based on the user's preferred season
-    recommended_locations = Location.objects.filter(season=user.preferred_season)
-
-    # Fetch travel tips based on the user's preferences
-    travel_tips = TravelTip.objects.filter(
-        season=user.preferred_season,
-        travel_type=user.preferred_travel_type
-    )
-    if request.method == 'POST':
-        form = UserEditForm(request.POST, request.FILES, instance=user)
-        if form.is_valid():
-            form.save()
-            return redirect('dashboard_page')
-    else:
-        form = UserEditForm(instance=user)
-    # Fetch the user's travel schedules
-    schedules = TravelSchedule.objects.filter(user=user)
+    # Forms initialization
+    form = UserEditForm(instance=user)
     schedule_form = TravelScheduleForm()
     entry_form = ScheduleEntryForm()
 
     if request.method == 'POST':
-        if 'create_schedule' in request.POST:
+        if 'edit_profile' in request.POST:
+            form = UserEditForm(request.POST, request.FILES, instance=user)
+            if form.is_valid():
+                form.save()
+                return redirect('dashboard_page')
+        elif 'create_schedule' in request.POST:
             schedule_form = TravelScheduleForm(request.POST)
             if schedule_form.is_valid():
                 schedule = schedule_form.save(commit=False)
@@ -273,25 +269,38 @@ def dashboard_page(request):
         elif 'add_entry' in request.POST:
             entry_form = ScheduleEntryForm(request.POST)
             schedule_id = request.POST.get('schedule_id')
-            schedule = TravelSchedule.objects.get(id=schedule_id, user=user)
-            if entry_form.is_valid():
+            try:
+                schedule = TravelSchedule.objects.get(id=schedule_id, user=user)
+            except TravelSchedule.DoesNotExist:
+                schedule = None
+            if schedule and entry_form.is_valid():
                 entry = entry_form.save(commit=False)
                 entry.schedule = schedule
                 entry.save()
                 return redirect('dashboard_page')
-    upcoming_events = Event.objects.filter(
-        season=user.preferred_season,  # Only events after the current date
-    )
+
+    # Fetch data for dashboard display
+    schedules = TravelSchedule.objects.filter(user=user)
+    upcoming_events = Event.objects.filter(season=user.preferred_season)  # You can filter on date if needed
+
+    # Get recommendations based on preferred season
+    query = user.preferred_season or ''
+    recommendations = get_recommendations(query)
+
     context = {
-        'recommended_locations': recommended_locations,
-        'travel_tips': travel_tips,
-        'upcoming_events': upcoming_events,
+        'recommended_locations': recommendations.get('locations', []),
+        'recommended_events': recommendations.get('events', []),
+        'recommended_tips': recommendations.get('tips', []),
+        'recommended_schedule_entries': recommendations.get('schedule_entries', []),
         'form': form,
         'schedules': schedules,
         'schedule_form': schedule_form,
         'entry_form': entry_form,
+        'upcoming_events': upcoming_events,
     }
+
     return render(request, 'add_user/dashboard.html', context)
+
 
 
 def update_profile(request):
@@ -351,9 +360,39 @@ def get_interest_info(request):
             'recommendations': recommendations,
             'message': '' if (suggestions or recommendations) else 'No suggestions or recommendations found.'
         })
-
-
 def get_recommendations(query):
+    query = query.lower().strip()
+
+    # Instead of filtering by name, filter locations by season (assuming Location has season field)
+    locations = Location.objects.filter(season__iexact=query)
+
+    # Events also filter by season and upcoming (future) events
+    from django.utils import timezone
+    today = timezone.now().date()
+    events = Event.objects.filter(season__iexact=query, date__gte=today)  # assuming Event has 'date' field
+
+    # Travel tips filtered by season or travel_type containing query
+    tips = TravelTip.objects.filter(
+        Q(season__iexact=query) | Q(travel_type__icontains=query)
+    )
+
+    # Schedule entries - here filter by user or other logic. For now, let's keep it empty or all for demo
+    schedule_entries = ScheduleEntry.objects.none() 
+    print(f"Query used for recommendations: {query}")
+    print(f"Locations found: {locations.count()}")
+    print(f"Events found: {events.count()}")
+    print(f"Tips found: {tips.count()}")
+    print(f"Schedule entries found: {schedule_entries.count()}") # or filter by user or season if available
+
+    return {
+        'locations': list(locations),
+        'events': list(events),
+        'tips': list(tips),
+        'schedule_entries': list(schedule_entries),
+        }
+    
+
+
     print(f"Processing recommendations for query: '{query}'")
     
     # Dictionary of category-based recommendations
@@ -480,4 +519,36 @@ def delete_schedule(request, schedule_id):
     if request.method == 'POST':
         schedule = get_object_or_404(TravelSchedule, pk=schedule_id)
         schedule.delete()
-    return redirect('your_dashboard_view_name')
+    return redirect('dashboard_page')
+
+@csrf_exempt
+def book_flight(request):
+    if request.method == "POST":
+        offer_id = request.POST.get("offer_id")
+        offer_request_id = request.POST.get("offer_request_id")
+        print("🛫 Booking Offer:", offer_id)
+        print("📦 From Offer Request:", offer_request_id)
+
+        if not offer_id or not offer_request_id:
+            return render(request, "add_user/error.html", {"message": "Offer ID or request ID is missing."})
+
+        order = create_duffel_order(offer_id, offer_request_id)
+
+        if not order:
+            return render(request, "add_user/error.html", {"message": "Booking failed."})
+
+        return render(request, "add_user/booking_success.html", {"order": order})
+
+    return redirect("home")
+
+
+
+@csrf_exempt
+def cancel_flight(request):
+    if request.method == "POST":
+        order_id = request.POST.get("order_id")
+        success = cancel_duffel_order(order_id)
+        if success:
+            return render(request, "add_user/booking_cancelled.html", {"order_id": order_id})
+        else:
+            return render(request, "error.html", {"message": "Cancellation failed."})
