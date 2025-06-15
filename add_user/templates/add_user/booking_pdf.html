@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Booking PDF</title>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 14px; }
+    h1 { color: #337289; }
+    .section { margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>✈️ Flight Booking Confirmation</h1>
+
+  <div class="section">
+    <strong>Order ID:</strong> {{ order.id }}<br>
+    <strong>Passenger:</strong> {{ order.passengers.0.given_name }} {{ order.passengers.0.family_name }}
+  </div>
+
+  <div class="section">
+    <strong>Total Paid:</strong> {{ order.total_amount }} {{ order.total_currency }}<br>
+    <strong>Status:</strong> {{ order.status }}
+  </div>
+
+  {% for slice in order.slices %}
+    <div class="section">
+      <strong>Flight:</strong> {{ slice.origin.iata_code }} → {{ slice.destination.iata_code }}<br>
+      <strong>Departure:</strong> {{ slice.segments.0.departing_at }}
+    </div>
+  {% endfor %}
+</body>
+</html>

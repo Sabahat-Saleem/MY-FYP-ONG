@@ -214,12 +214,14 @@
               {% endfor %}
             </ul>
 
-            <!-- ✅ BOOK BUTTON (inside loop and valid) -->
-            <form method="post" action="{% url 'book_flight' %}" class="mt-3">
-                {% csrf_token %}
+            <!-- ✅ BOOK BUTTON (only 1 per offer) -->
+            <form method="GET" action="{% url 'flight_booking' %}" class="mt-3">
                 <input type="hidden" name="offer_id" value="{{ offer.id }}">
                 <input type="hidden" name="offer_request_id" value="{{ offer_request_id }}">
-                <button type="submit" class="btn btn-sm btn-primary">✈️ Book This Flight</button>
+                <input type="hidden" name="passenger_id" value="{{ passenger_id }}">
+                <button type="submit" class="btn" style="background-color: #337289; color: white;">
+                    ✈️ Book This Flight
+                </button>
                 </form>
           </div>
         </div>
@@ -231,6 +233,7 @@
     No flight offers available right now.
   </div>
 {% endif %}
+
 
 </div>
 
@@ -282,6 +285,27 @@
         {% endfor %}
     </div>
 </div>
+<!-- Feedback Section -->
+<section id="feedback" class="container my-5" style="background: #fdfdfd; border-radius: 12px; padding: 40px; box-shadow: 0 8px 20px rgba(0,0,0,0.06);">
+  <h2 class="text-center mb-4" style="color: #2c3e50;">💬 We'd Love Your Feedback</h2>
+
+  <form method="post" action="{% url 'submit_feedback' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="name" class="form-label">Your Name</label>
+      <input type="text" name="name" class="form-control" required placeholder="John Doe">
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email address</label>
+      <input type="email" name="email" class="form-control" required placeholder="john@example.com">
+    </div>
+    <div class="mb-3">
+      <label for="message" class="form-label">Feedback</label>
+      <textarea name="message" class="form-control" rows="4" required placeholder="Share your thoughts with us..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-gradient">📨 Submit Feedback</button>
+  </form>
+</section>
 
 <!-- Google Map Section -->
 <footer style="background-color: #f8f9fa; padding: 40px 0; border-top: 2px solid #30748c;">

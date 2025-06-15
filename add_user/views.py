@@ -22,6 +22,8 @@ import re
 User = get_user_model()
 import requests
 import datetime
+from xhtml2pdf import pisa
+from django.template.loader import get_template
 
 def add_show(request):
     if request.method == 'POST':
@@ -221,6 +223,7 @@ def Home(request):
     flight_data = get_duffel_schedules()
     offers = flight_data.get("offers", [])
     offer_request_id = flight_data.get("offer_request_id", "")
+    passenger_id = flight_data.get("passenger_id", "") 
 
     hotels = Hotel.objects.all()
     season = get_current_season()
@@ -231,7 +234,8 @@ def Home(request):
 
     context = {
         'flight_offers': offers,
-        'offer_request_id': offer_request_id,  # ✅ pass this to the template
+        'offer_request_id': offer_request_id, 
+         'passenger_id': passenger_id, # ✅ pass this to the template
         'hotels': hotels,
         'seasonal_destinations': seasonal_destinations,
         'current_season': season,
@@ -521,25 +525,70 @@ def delete_schedule(request, schedule_id):
         schedule.delete()
     return redirect('dashboard_page')
 
+
+
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
+
 @csrf_exempt
 def book_flight(request):
     if request.method == "POST":
         offer_id = request.POST.get("offer_id")
         offer_request_id = request.POST.get("offer_request_id")
-        print("🛫 Booking Offer:", offer_id)
-        print("📦 From Offer Request:", offer_request_id)
+        passenger_id = request.POST.get("passenger_id")
 
-        if not offer_id or not offer_request_id:
-            return render(request, "add_user/error.html", {"message": "Offer ID or request ID is missing."})
+        given_name = request.POST.get("given_name")
+        family_name = request.POST.get("family_name")
+        email = request.POST.get("email")
+        phone_number = request.POST.get("phone_number")
+        born_on = request.POST.get("born_on")
+        gender = request.POST.get("gender")
+        title = request.POST.get("title")
 
-        order = create_duffel_order(offer_id, offer_request_id)
+        if not all([offer_id, offer_request_id, passenger_id, given_name, family_name, email, phone_number, born_on, gender, title]):
+            return render(request, "add_user/error.html", {
+                "message": "Missing passenger or flight information."
+            })
 
-        if not order:
-            return render(request, "add_user/error.html", {"message": "Booking failed."})
+        order = create_duffel_order(
+            offer_id, offer_request_id, passenger_id,
+            given_name, family_name, email, phone_number, born_on, gender, title
+        )
 
-        return render(request, "add_user/booking_success.html", {"order": order})
+        if order:
+            request.session["last_order"] = order  # ✅ For download later
+            return render(request, "add_user/booking_confirmation.html", {"order": order})
+        else:
+            return render(request, "add_user/error.html", {
+                "message": "Booking failed due to Duffel API. Try again."
+            })
 
+    # ✅ Handle all non-POST requests gracefully
     return redirect("home")
+
+   
+def flight_booking(request):
+    # ✅ Always start fresh
+    flight_data = get_duffel_schedules()
+
+    offers = flight_data["offers"]
+    if not offers:
+        return render(request, "add_user/error.html", {
+            "message": "No offers available right now. Please try again."
+        })
+
+    offer_id = offers[0]["id"]
+    offer_request_id = flight_data["offer_request_id"]
+    passenger_id = flight_data["passenger_id"]
+
+    context = {
+        "offer_id": offer_id,
+        "offer_request_id": offer_request_id,
+        "passenger_id": passenger_id
+    }
+    return render(request, "add_user/flight_booking.html", context)
+
+
 
 
 
@@ -552,3 +601,38 @@ def cancel_flight(request):
             return render(request, "add_user/booking_cancelled.html", {"order_id": order_id})
         else:
             return render(request, "error.html", {"message": "Cancellation failed."})
+
+def download_booking_pdf(request, order_id):
+    # You'll need to fetch this order from your session or database in real usage
+    order = request.session.get("last_order")  # or load from DB if you store it
+
+    if not order or order["id"] != order_id:
+        return HttpResponse("Invalid or expired booking.", status=400)
+
+    template_path = 'add_user/booking_pdf.html'
+    context = {"order": order}
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename=booking_{order_id}.pdf'
+
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse("PDF generation error", status=500)
+
+    return response
+
+def submit_feedback(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+
+        # Save to database or send email
+        print("Feedback received:", name, email, message)  # replace with your logic
+
+        messages.success(request, "Thank you for your feedback!")
+        return redirect('home')  # or wherever you want to redirect
+
+    return redirect('home')
