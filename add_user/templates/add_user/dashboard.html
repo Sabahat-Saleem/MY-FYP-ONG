@@ -406,7 +406,7 @@ body.dark-mode label {
         <div class="main-content">
             <!-- Profile Card --><button id="darkModeToggle">🌙 Dark Mode</button>
 
-            <div class="profile-card-horizontal">
+           <div class="profile-card-horizontal">
                 <div class="profile-pic-container">
                     <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}" alt="User Profile" class="profile-pic">
                 </div>
@@ -435,7 +435,7 @@ body.dark-mode label {
                     <!-- Render the Form Fields -->
                     {{ form.as_p }}
 
-                    <button type="submit" class="save-btn">Save Changes</button>
+                    <button type="submit" name="edit_profile" value="1" class="save-btn">Save Changes</button>
                 </form>
             </div>
 <div class="card border-0 shadow-sm card-glow" style="border-radius: 16px; background: linear-gradient(to bottom right, #e3eaf2, #ffffff);">
@@ -637,7 +637,7 @@ body.dark-mode label {
     form.classList.toggle("hidden");
   }
 
-  // ✅ Working Dark Mode Toggle
+  //  Working Dark Mode Toggle
   const toggle = document.getElementById('darkModeToggle');
   toggle.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
@@ -645,7 +645,7 @@ body.dark-mode label {
   });
 
 </script>
-<!-- Include AOS script if not already included -->
+
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>AOS.init();</script>
 </body>

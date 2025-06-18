@@ -286,26 +286,80 @@
     </div>
 </div>
 <!-- Feedback Section -->
-<section id="feedback" class="container my-5" style="background: #fdfdfd; border-radius: 12px; padding: 40px; box-shadow: 0 8px 20px rgba(0,0,0,0.06);">
-  <h2 class="text-center mb-4" style="color: #2c3e50;">💬 We'd Love Your Feedback</h2>
+<section id="feedback" class="py-5" style="background-color: #f9fcfd;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
 
-  <form method="post" action="{% url 'submit_feedback' %}">
-    {% csrf_token %}
-    <div class="mb-3">
-      <label for="name" class="form-label">Your Name</label>
-      <input type="text" name="name" class="form-control" required placeholder="John Doe">
+        <!-- Feedback Form -->
+        <div class="card border border-2" style="border-color:#34748c !important; box-shadow: 0 4px 10px rgba(52, 116, 140, 0.15);">
+          <div class="card-body p-5">
+            <h2 class="text-center mb-4" style="color:#34748c;">💬 Share Your Thoughts</h2>
+
+            <form method="post" enctype="multipart/form-data" action="{% url 'home' %}">
+              {% csrf_token %}
+
+              <div class="form-floating mb-3">
+                <input type="text" name="name" class="form-control" id="id_name" placeholder="Your Name">
+                <label for="id_name">Your Name</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                <input type="email" name="email" class="form-control" id="id_email" placeholder="name@example.com">
+                <label for="id_email">Email address</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                <textarea name="message" class="form-control" placeholder="Your feedback here" id="id_message" style="height: 150px;"></textarea>
+                <label for="id_message">Your Feedback</label>
+              </div>
+
+              <div class="mb-4">
+                <label for="id_photo" class="form-label" style="color:#34748c;">Upload Photo (optional)</label>
+                <input type="file" name="photo" class="form-control" id="id_photo">
+              </div>
+
+              <div class="d-grid">
+                <button type="submit" class="btn text-white" style="background-color: #34748c;">
+                  📨 Submit Feedback
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Feedback Display -->
+        <div class="mt-5">
+          <h3 class="text-center mb-4" style="color:#34748c;">🧾 Community Feedback</h3>
+
+          {% for fb in feedback_list %}
+            <div class="card mb-4 border border-2" style="border-color: #34748c !important; box-shadow: 0 3px 8px rgba(52, 116, 140, 0.1);">
+              <div class="card-body d-flex align-items-start">
+                <!-- Photo -->
+                {% if fb.photo %}
+                  <img src="{{ fb.photo.url }}" alt="{{ fb.name }}" class="rounded-circle me-3" width="60" height="60">
+                {% else %}
+                  <img src="https://via.placeholder.com/60" class="rounded-circle me-3" alt="Avatar">
+                {% endif %}
+
+                <!-- Feedback Content -->
+                <div>
+                  <h5 style="color:#34748c;" class="mb-1">{{ fb.name }}</h5>
+                  <small class="text-muted">{{ fb.created_at|date:"F j, Y g:i A" }}</small>
+                  <p class="mt-2">{{ fb.message }}</p>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <p class="text-center text-muted">No feedback submitted yet. Be the first!</p>
+          {% endfor %}
+        </div>
+
+      </div>
     </div>
-    <div class="mb-3">
-      <label for="email" class="form-label">Email address</label>
-      <input type="email" name="email" class="form-control" required placeholder="john@example.com">
-    </div>
-    <div class="mb-3">
-      <label for="message" class="form-label">Feedback</label>
-      <textarea name="message" class="form-control" rows="4" required placeholder="Share your thoughts with us..."></textarea>
-    </div>
-    <button type="submit" class="btn btn-gradient">📨 Submit Feedback</button>
-  </form>
+  </div>
 </section>
+
 
 <!-- Google Map Section -->
 <footer style="background-color: #f8f9fa; padding: 40px 0; border-top: 2px solid #30748c;">

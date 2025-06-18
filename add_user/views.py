@@ -8,8 +8,8 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-from .forms import Travel_Registration, UserUpdateForm, EditProfileForm, UserEditForm, TravelSchedule, ScheduleEntryForm, TravelScheduleForm
-from .models import Location, Event, TravelTip, Interest, Hotel, ScheduleEntry
+from .forms import Travel_Registration, UserUpdateForm, EditProfileForm, UserEditForm, TravelSchedule, ScheduleEntryForm, TravelScheduleForm, FeedbackForm, ReplyForm
+from .models import Location, Event, TravelTip, Interest, Hotel, ScheduleEntry, Feedback
 from .utils import get_duffel_schedules, create_duffel_order, cancel_duffel_order
 from django.core.validators import validate_email, ValidationError
 from django.conf import settings
@@ -219,26 +219,47 @@ def user_logout(request):
     return redirect('login')  # Redirect to login page after logout
 
 
+
 def Home(request):
+    # 🔹 Duffel flight offers
     flight_data = get_duffel_schedules()
     offers = flight_data.get("offers", [])
     offer_request_id = flight_data.get("offer_request_id", "")
-    passenger_id = flight_data.get("passenger_id", "") 
+    passenger_id = flight_data.get("passenger_id", "")
 
+    # 🔹 Hotels and seasonal destinations
     hotels = Hotel.objects.all()
     season = get_current_season()
     seasonal_destinations = Location.objects.filter(season=season)
-
     for destination in seasonal_destinations:
         destination.activities_list = destination.activities.split(',')
 
+    # 🔹 Feedback form logic (for POST)
+    if request.method == "POST":
+        form = FeedbackForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = FeedbackForm()
+
+    # 🔹 Get all feedback and related replies
+    feedback_list = Feedback.objects.prefetch_related('replies').order_by('-created_at')
+    reply_forms = {fb.id: ReplyForm() for fb in feedback_list}
+
     context = {
         'flight_offers': offers,
-        'offer_request_id': offer_request_id, 
-         'passenger_id': passenger_id, # ✅ pass this to the template
+        'offer_request_id': offer_request_id,
+        'passenger_id': passenger_id,
         'hotels': hotels,
         'seasonal_destinations': seasonal_destinations,
         'current_season': season,
+
+        # Feedback context
+        'form': form,
+        'feedback_list': feedback_list,
+        'reply_forms': reply_forms,
+        'feedback_list': feedback_list, 
     }
 
     return render(request, 'add_user/home.html', context)
@@ -247,7 +268,7 @@ def Home(request):
  
 # @login_required
 
-@login_required
+
 @login_required
 def dashboard_page(request):
     user = request.user
@@ -568,29 +589,36 @@ def book_flight(request):
 
    
 def flight_booking(request):
-    # ✅ Always start fresh
-    flight_data = get_duffel_schedules()
+    try:
+        # ✅ Always fetch fresh data to avoid reusing a used offer_request_id
+        flight_data = get_duffel_schedules()
 
-    offers = flight_data["offers"]
-    if not offers:
+        offers = flight_data.get("offers", [])
+        if not offers:
+            return render(request, "add_user/error.html", {
+                "message": "No flight offers available at the moment. Please try again later."
+            })
+
+        # ✅ Select the first available offer (or implement logic to show multiple)
+        selected_offer = offers[0]
+        offer_id = selected_offer["id"]
+        offer_request_id = flight_data["offer_request_id"]
+        passenger_id = flight_data["passenger_id"]
+
+        context = {
+            "offer_id": offer_id,
+            "offer_request_id": offer_request_id,
+            "passenger_id": passenger_id,
+            "offers": offers  # Optional: if you want to show multiple options
+        }
+
+        return render(request, "add_user/flight_booking.html", context)
+
+    except Exception as e:
+        # ✅ Catch Duffel API or internal errors
         return render(request, "add_user/error.html", {
-            "message": "No offers available right now. Please try again."
+            "message": f"Flight search failed: {str(e)}"
         })
-
-    offer_id = offers[0]["id"]
-    offer_request_id = flight_data["offer_request_id"]
-    passenger_id = flight_data["passenger_id"]
-
-    context = {
-        "offer_id": offer_id,
-        "offer_request_id": offer_request_id,
-        "passenger_id": passenger_id
-    }
-    return render(request, "add_user/flight_booking.html", context)
-
-
-
-
 
 @csrf_exempt
 def cancel_flight(request):
@@ -623,16 +651,12 @@ def download_booking_pdf(request, order_id):
 
     return response
 
-def submit_feedback(request):
+def submit_reply(request, feedback_id):
+    feedback = Feedback.objects.get(id=feedback_id)
     if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        message = request.POST.get('message')
-
-        # Save to database or send email
-        print("Feedback received:", name, email, message)  # replace with your logic
-
-        messages.success(request, "Thank you for your feedback!")
-        return redirect('home')  # or wherever you want to redirect
-
+        form = ReplyForm(request.POST)
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.feedback = feedback
+            reply.save()
     return redirect('home')
