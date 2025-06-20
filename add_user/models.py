@@ -113,4 +113,19 @@ class ScheduleEntry(models.Model):
     location = models.CharField(max_length=100)
     activity = models.TextField()
     accommodation = models.CharField(max_length=200, blank=True, null=True)
+    
+class Feedback(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
+    photo = models.ImageField(upload_to='feedback_photos/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
+class FeedbackReply(models.Model):
+    feedback = models.ForeignKey(Feedback, related_name='replies', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)

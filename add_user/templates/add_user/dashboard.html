@@ -6,6 +6,9 @@
     <title>User Dashboard</title>
     <link rel="stylesheet" href="{% static 'add_user/css/sidebardash.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    
     
     <style>
       .hidden { display: none; }
@@ -160,79 +163,106 @@
         border: 1px solid #CCCCCC; /* Light Gray Border */
     }
 
-    /* Suggestions Section */
-    .suggestions {
-        width: 80%;
-        margin: 30px auto;
-        padding: 20px;
+
+    /* Toggle button */
+#darkModeToggle {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background-color: #6c5ce7;
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.3s;
+}
+
+#darkModeToggle:hover {
+    background-color: #4834d4;
+}
+body.dark-mode {
+  background-color: #1e1e2f;
+  color: #e0e0e0;
+}
+
+body.dark-mode .list-group-item,
+body.dark-mode .form-container,
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: #2c2c3e;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+body.dark-mode h2, 
+body.dark-mode h3, 
+body.dark-mode label {
+  color: #f0f0f0;
+}
+    /* Recommended locations on dashbord  */
+    .recommended-locations {
         background-color: #FFFFFF; /* White */
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        margin-bottom: 20px;
     }
 
-    .section-title {
-        font-size: 1.8em;
-        color: #16A085; /* Teal */
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        border-bottom: 3px solid #1ABC9C; /* Lighter Teal */
-        padding-bottom: 5px;
-        font-weight: bold;
-    }
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
 
-    .item {
-        background-color: #F9F9F9; /* Light Gray */
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, background-color 0.3s ease;
-    }
+  .location-card {
+    background: #ffffff;
+    border: 1px solid #eaecef;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: box-shadow 0.2s ease;
+  }
 
-    .item strong {
-        font-weight: bold;
-        color: #16A085; /* Teal */
-        font-size: 1.2em;
-    }
+  .location-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
 
-    .item p {
-        color: #34495E; /* Dark Blue-Gray */
-        font-size: 1em;
-        line-height: 1.6em;
-    }
+  .badge-season {
+    background-color: #6c5ce7;
+    color: white;
+    padding: 0.3em 0.7em;
+    font-size: 0.75rem;
+    border-radius: 999px;
+  }
 
-    .item:hover {
-        background-color: #E8F5F1; /* Light Teal */
-        transform: scale(1.05);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
+  .tip-card {
+    background-color: #f4f6f8;
+    border-left: 4px solid #6c5ce7;
+    padding: 0.9rem 1.2rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+  }
 
-    .tip-item {
-        background-color: #E8F5F1; /* Light Teal */
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, background-color 0.3s ease;
-    }
+  .list-group-item {
+    border: 1px solid #eaecef;
+    border-radius: 10px;
+    background-color: #ffffff;
+    margin-bottom: 0.7rem;
+  }
 
-    .tip-title {
-        font-weight: bold;
-        color: #16A085; /* Teal */
-        font-size: 1.2em;
-    }
-
-    .tip-content {
-        color: #34495E; /* Dark Blue-Gray */
-        font-size: 1em;
-        line-height: 1.6em;
-    }
-
-    .tip-item:hover {
-        background-color: #D5F5E3; /* Lighter Green */
-        transform: scale(1.05);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
+  .text-muted.fst-italic {
+    margin-top: -1rem;
+    font-size: 0.95rem;
+  }
     /* schedule of travel */ .form-container {
         background-color: #f7f7f7;
         padding: 20px;
@@ -318,11 +348,21 @@
         font-size: 1.1rem;
         color: #6c757d;
     }
+    @keyframes pulseEffect {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 74, 130, 0.4); }
+    70% { transform: scale(1.02); box-shadow: 0 0 0 20px rgba(46, 74, 130, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 74, 130, 0); }
+    }
 
-
+    .card-glow {
+    animation: pulseEffect 2.5s ease-out infinite;
+    transition: transform 0.3s;
+    }
+    html {
+        scroll-behavior: smooth;
+         }
     </style>
 </head>
-
 <body>
     <div class="dashboard">
         <!-- Sidebar -->
@@ -338,9 +378,19 @@
                         <span class="sidebar-text">Home</span>
                     </a>
                 </li>
-                <li><i class="fa fa-user"></i> <span class="sidebar-text">Profile</span></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'update_profile' %}">
+                        <i class="fa fa-user"></i>
+                        <span class="sidebar-text">Edit Profile</span>
+                    </a>
+                    </li>
                 <li><i class="fa fa-tasks"></i> <span class="sidebar-text">Activities</span></li>
-                <li><i class="fa fa-bell"></i> <span class="sidebar-text">Notifications</span></li>
+                <li>
+                <a href="#schedule" style="text-decoration: none; color: inherit;">
+                    <i class="fa fa-bell"></i> 
+                    <span class="sidebar-text">Schedules</span>
+                </a>
+                </li>
                 <li>
                     <a href="{% url 'logout' %}" class="logout" 
                        onclick="confirmLogout(event)" 
@@ -354,8 +404,9 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Profile Card -->
-            <div class="profile-card-horizontal">
+            <!-- Profile Card --><button id="darkModeToggle">🌙 Dark Mode</button>
+
+           <div class="profile-card-horizontal">
                 <div class="profile-pic-container">
                     <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}" alt="User Profile" class="profile-pic">
                 </div>
@@ -384,55 +435,77 @@
                     <!-- Render the Form Fields -->
                     {{ form.as_p }}
 
-                    <button type="submit" class="save-btn">Save Changes</button>
+                    <button type="submit" name="edit_profile" value="1" class="save-btn">Save Changes</button>
                 </form>
             </div>
+<div class="card border-0 shadow-sm card-glow" style="border-radius: 16px; background: linear-gradient(to bottom right, #e3eaf2, #ffffff);">
 
-            <!-- Suggestions Section -->
-            <div class="suggestions">
-                <h2 class="section-title">Recommended Locations</h2>
-                {% if recommended_locations %}
-                    <ul class="item-list">
-                        {% for location in recommended_locations %}
-                            <li class="item">
-                                <strong>{{ location.name }}</strong>
-                                <p>{{ location.description }}</p>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No location recommendations available.</p>
-                {% endif %}
+  <!-- Recommended Locations -->
+  <h2 class="section-title text-center mb-4" data-aos="fade-down"
+      style="font-size: 2.2rem; font-weight: 700; color: #102542;">
+      Recommended Locations
+  </h2>
+  {% if recommended_locations %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+      {% for location in recommended_locations %}
+        <div class="col" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+          <div class="card border-0 shadow-sm"
+               style="border-radius: 16px; background: linear-gradient(to bottom right, #e3eaf2, #ffffff);">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <h5 class="mb-0" style="color: #0f1b2d; font-weight: 600;">{{ location.name }}</h5>
+              <span class="badge rounded-pill text-white"
+                    style="background-color: #2e4a82; font-size: 0.85rem;">{{ location.season }}</span>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted fst-italic text-center">No recommended locations currently.</p>
+  {% endif %}
 
-                <h2 class="section-title">Upcoming Events</h2>
-                {% if upcoming_events %}
-                    <ul class="item-list">
-                        {% for event in upcoming_events %}
-                            <li class="item">
-                                <strong>{{ event.name }}</strong> on {{ event.date|date:"F j, Y" }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No event recommendations available.</p>
-                {% endif %}
+  <!-- Recommended Events -->
+  <h2 class="section-title text-center mb-4" data-aos="fade-down"
+      style="font-size: 2.2rem; font-weight: 700; color: #102542;">
+      Recommended Events
+  </h2>
+  {% if recommended_events %}
+    <ul class="list-group list-group-flush mb-5">
+      {% for event in recommended_events %}
+        <li class="list-group-item bg-white shadow-sm mb-3"
+            data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00"
+            style="border-left: 4px solid #2e4a82; border-radius: 10px;">
+          <div class="fw-semibold fs-5" style="color: #0f1b2d;">{{ event.name }}</div>
+          <small class="text-muted">{{ event.date }}</small><br>
+          <span style="color: #1a2f4d;">{{ event.title }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted fst-italic text-center">No recommended events currently.</p>
+  {% endif %}
 
-                <h2 class="section-title">Travel Tips</h2>
-                <ul class="item-list">
-                    {% for tip in travel_tips %}
-                        <li class="tip-item">
-                            <strong class="tip-title">{{ tip.title }}</strong>
-                            <p class="tip-content">{{ tip.content }}</p>
-                        </li>
-                    {% empty %}
-                        <li class="item">No travel tips available for your preferences yet.</li>
-                    {% endfor %}
-                </ul>
+  <!-- Recommended Travel Tips -->
+  <h2 class="section-title text-center mb-4" data-aos="fade-down"
+      style="font-size: 2.2rem; font-weight: 700; color: #102542;">
+      Recommended Travel Tips
+  </h2>
+  {% if recommended_tips %}
+    {% for tip in recommended_tips %}
+      <div class="tip-card p-4 mb-3 shadow-sm" data-aos="fade-up"
+           style="background: #f2f7ff; border-left: 4px solid #2e4a82; border-radius: 12px;">
+        <strong class="text-dark" style="color: #0d1e36;">{{ tip.title }}</strong>
+        <p class="mb-0 text-muted" style="color: #243e5f;">{{ tip.content }}</p>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted fst-italic text-center">No travel tips available.</p>
+  {% endif %}
 
+</div>
            <!-- Travel Schedule Section -->
 <!-- Travel Schedule Section -->
-<section class="schedule-section" style="padding: 50px 20px; background-color: #f4f4f4; font-family: 'Segoe UI', sans-serif;">
-
+<section id="schedule"  class="schedule-section" style="padding: 50px 20px; background-color: #f4f4f4; font-family: 'Segoe UI', sans-serif;">
     <!-- Create Schedule -->
     <div style="background-color: #fff; padding: 40px; border-radius: 14px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05); margin-bottom: 50px;">
         <h2 style="font-size: 28px; color: #2c3e50; margin-bottom: 30px;">🗓️ Plan a New Travel Schedule</h2>
@@ -483,15 +556,19 @@
                     {% endfor %}
                 </div>
 
-                <!-- Delete Schedule -->
-                <form method="POST" action="{% url 'delete_schedule' schedule.id %}" style="display:inline; margin-top: 20px;">
-                    {% csrf_token %}
-                    <button type="submit" onclick="return confirm('Are you sure you want to delete this schedule?');"
-                        style="background-color: #e74c3c; border: none; color: white; padding: 10px 20px; border-radius: 6px; font-size: 14px; cursor: pointer;">
-                        🗑️ Delete Schedule
-                    </button>
-                </form>
-            </div>
+                {% for schedule in schedules %}
+    <div>
+        <p>{{ schedule.name }}</p>  <!-- Apne schedule ka koi naam ya info dikhana hai -->
+
+        <form method="POST" action="{% url 'delete_schedule' schedule.id %}" style="display:inline; margin-top: 20px;">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('Are you sure you want to delete this schedule?');"
+                style="background-color: #e74c3c; border: none; color: white; padding: 10px 20px; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                🗑️ Delete Schedule
+            </button>
+        </form>
+    </div>
+{% endfor %}
         {% empty %}
             <p style="color: #777; font-size: 16px;">You haven’t created any travel schedules yet.</p>
         {% endfor %}
@@ -536,32 +613,40 @@
     </div>
     {% endif %}
 </section>
-
             </div>
         </div>
     </div>
-</body>
+    <script>
+  function toggleSidebar() {
+    var sidebar = document.querySelector(".sidebar");
+    sidebar.classList.toggle("collapsed");
+    var texts = document.querySelectorAll(".sidebar-text");
+    texts.forEach(text => text.classList.toggle("hidden"));
+  }
 
-<script>
-    function toggleSidebar() {
-        var sidebar = document.querySelector(".sidebar");
-        sidebar.classList.toggle("collapsed");
-        
-        var texts = document.querySelectorAll(".sidebar-text");
-        texts.forEach(text => text.classList.toggle("hidden"));
+  function confirmLogout(event) {
+    event.preventDefault();
+    let logoutUrl = event.currentTarget.href;
+    if (confirm("Are you sure you want to logout?")) {
+      window.location.href = logoutUrl;
     }
+  }
 
-    function confirmLogout(event) {
-        event.preventDefault();
-        let logoutUrl = event.currentTarget.href;
-        if (confirm("Are you sure you want to logout?")) {
-            window.location.href = logoutUrl;
-        }
-    }
-    function toggleEditForm() {
-        var form = document.getElementById("edit-profile-form");
-        form.classList.toggle("hidden");
-    }
+  function toggleEditForm() {
+    var form = document.getElementById("edit-profile-form");
+    form.classList.toggle("hidden");
+  }
+
+  //  Working Dark Mode Toggle
+  const toggle = document.getElementById('darkModeToggle');
+  toggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    toggle.textContent = document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
+  });
+
 </script>
 
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init();</script>
+</body>
 </html>

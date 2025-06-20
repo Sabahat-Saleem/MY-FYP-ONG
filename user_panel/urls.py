@@ -32,12 +32,21 @@ urlpatterns = [
     path('update/<int:id>/', views.update_data, name="updatedata"),
     path('dashboard/', views.dashboard_page, name="dashboard_page"),
     path('update-profile/', views.update_profile, name='update_profile'),
+    path('update-profile/<int:user_id>/', views.update_profile, name='update_profile'),
     path('logout/', views.user_logout, name='logout'),
     path('interests/', views.get_interest_info, name='get_interest_info'),
     path('/', views.get_recommendations, name='get_recommendations'),
     path('interest_page/', views.interest_page, name='interest_page'),
     path('api/hotels/', views.HotelListAPIView.as_view(), name='hotel-list'),
     path('schedule/delete/<int:schedule_id>/', views.delete_schedule, name='delete_schedule'),
+    path('book-flight/', views.book_flight, name='book_flight'),
+    path('cancel-flight/', views.cancel_flight, name='cancel_flight'),
+    path("flight-booking/", views.flight_booking, name="flight_booking"),
+    path('download-booking/<str:order_id>/', views.download_booking_pdf, name='booking_pdf'),
+    path('feedback/reply/<int:feedback_id>/', views.submit_reply, name='submit_reply'),
+
+
+
 ]
 
 if settings.DEBUG:

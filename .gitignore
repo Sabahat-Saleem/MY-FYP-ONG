@@ -1,2 +1,7 @@
 user_panel/settings.py
 
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+
