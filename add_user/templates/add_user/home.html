@@ -203,26 +203,40 @@
             <p class="card-text"><strong>Cabin Class:</strong> {{ offer.cabin_class }}</p>
             <p class="card-text"><strong>Segments:</strong></p>
             <ul class="list-group list-group-flush">
-              {% for slice in offer.slices %}
-                {% for segment in slice.segments %}
-                  <li class="list-group-item">
-                    <span class="text-muted">{{ segment.departing_at }}</span><br>
-                    <strong>{{ segment.origin.iata_code }}</strong>
-                    → <strong>{{ segment.destination.iata_code }}</strong>
-                  </li>
-                {% endfor %}
-              {% endfor %}
-            </ul>
-
+  {% for slice in offer.slices %}
+    {% for segment in slice.segments %}
+      <li class="list-group-item">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <span class="text-muted">{{ segment.departing_at|date:"D, d M Y H:i" }}</span><br>
+            <strong>{{ segment.origin.iata_code }}</strong> → <strong>{{ segment.destination.iata_code }}</strong><br>
+            ✈️ {{ segment.marketing_carrier.name }} 
+            {% if segment.marketing_carrier.logo_symbol_url %}
+              <img src="{{ segment.marketing_carrier.logo_symbol_url }}" alt="{{ segment.marketing_carrier.name }}" style="height: 18px; vertical-align: middle;">
+            {% endif %}
+            <br>
+            🧳 Baggage: 
+            {% if segment.passengers.0.baggages %}
+              {{ segment.passengers.0.baggages.0.quantity }}x Checked, {{ segment.passengers.0.baggages.1.quantity }}x Carry-on
+            {% else %}
+              Info not available
+            {% endif %}
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+  {% endfor %}
+</ul>
             <!-- ✅ BOOK BUTTON (only 1 per offer) -->
-            <form method="GET" action="{% url 'flight_booking' %}" class="mt-3">
-                <input type="hidden" name="offer_id" value="{{ offer.id }}">
-                <input type="hidden" name="offer_request_id" value="{{ offer_request_id }}">
-                <input type="hidden" name="passenger_id" value="{{ passenger_id }}">
-                <button type="submit" class="btn" style="background-color: #337289; color: white;">
-                    ✈️ Book This Flight
-                </button>
-                </form>
+            <form method="POST" action="{% url 'flight_booking' %}" class="mt-3">
+    {% csrf_token %}
+    <input type="hidden" name="offer_id" value="{{ offer.id }}">
+    <input type="hidden" name="offer_request_id" value="{{ offer_request_id }}">
+    <input type="hidden" name="passenger_id" value="{{ passenger_id }}">
+    <button type="submit" class="btn" style="background-color: #337289; color: white;">
+        ✈️ Book This Flight
+    </button>
+</form>
           </div>
         </div>
       </div>
@@ -233,8 +247,6 @@
     No flight offers available right now.
   </div>
 {% endif %}
-
-
 </div>
 
 <section id="hotels-section" class="py-5">

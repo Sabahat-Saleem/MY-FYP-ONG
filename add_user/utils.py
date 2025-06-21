@@ -15,7 +15,7 @@ def get_duffel_schedules():
                 {
                     "origin": "LHE",
                     "destination": "DXB",
-                    "departure_date": "2025-06-20"
+                    "departure_date": "2025-07-30"
                 }
             ],
             "passengers": [

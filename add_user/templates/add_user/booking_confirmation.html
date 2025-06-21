@@ -26,17 +26,11 @@
                 <input type="hidden" name="order_id" value="{{ order.id }}">
                 <button type="submit" class="btn btn-danger">❌ Cancel This Booking</button>
             </form>
-<<<<<<< HEAD
-        </div>
-        <a href="{% url 'booking_pdf %}" class="btn btn-outline-success mt-4">
-  ⬇️ Download Booking PDF
-</a>
-=======
+
             <a href="{% url 'booking_pdf' order.id %}" class="btn btn-success mt-3">
     📄 Download Booking PDF
 </a>
         </div>     
->>>>>>> cf16640ab7766e4c0cabe775bd0e8d6ca7a44110
     </div>
 
     <!-- Bootstrap JS (Optional) -->

@@ -221,20 +221,20 @@ def user_logout(request):
 
 
 def Home(request):
-    # 🔹 Duffel flight offers
+    # 🔹 Flight offers Duffel API se lo
     flight_data = get_duffel_schedules()
-    offers = flight_data.get("offers", [])
-    offer_request_id = flight_data.get("offer_request_id", "")
-    passenger_id = flight_data.get("passenger_id", "")
+    offers = flight_data["offers"]
+    offer_request_id = flight_data["offer_request_id"]
+    passenger_id = flight_data["passenger_id"]
 
-    # 🔹 Hotels and seasonal destinations
+    # 🔹 Hotels aur seasonal jagah lo
     hotels = Hotel.objects.all()
     season = get_current_season()
     seasonal_destinations = Location.objects.filter(season=season)
     for destination in seasonal_destinations:
         destination.activities_list = destination.activities.split(',')
 
-    # 🔹 Feedback form logic (for POST)
+    # 🔹 Feedback form ka kaam
     if request.method == "POST":
         form = FeedbackForm(request.POST, request.FILES)
         if form.is_valid():
@@ -243,26 +243,24 @@ def Home(request):
     else:
         form = FeedbackForm()
 
-    # 🔹 Get all feedback and related replies
+    # 🔹 Sare feedback aur replies lo
     feedback_list = Feedback.objects.prefetch_related('replies').order_by('-created_at')
     reply_forms = {fb.id: ReplyForm() for fb in feedback_list}
 
+    # 🔹 Page pe bhejne wali data
     context = {
-        'flight_offers': offers,
-        'offer_request_id': offer_request_id,
-        'passenger_id': passenger_id,
-        'hotels': hotels,
-        'seasonal_destinations': seasonal_destinations,
-        'current_season': season,
-
-        # Feedback context
-        'form': form,
-        'feedback_list': feedback_list,
-        'reply_forms': reply_forms,
-        'feedback_list': feedback_list, 
+        "flight_offers": offers, 
+        "offer_request_id": offer_request_id,
+        "passenger_id": passenger_id,
+        "hotels": hotels,
+        "seasonal_destinations": seasonal_destinations,
+        "form": form,
+        "feedback_list": feedback_list,
+        "reply_forms": reply_forms,
     }
 
-    return render(request, 'add_user/home.html', context)
+    return render(request, "add_user/home.html", context)
+
 
 
  
