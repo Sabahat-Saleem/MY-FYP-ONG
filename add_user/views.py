@@ -8,7 +8,7 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-from .forms import Travel_Registration, UserUpdateForm, EditProfileForm, UserEditForm, TravelSchedule, ScheduleEntryForm, TravelScheduleForm, FeedbackForm, ReplyForm
+from .forms import Travel_Registration, UserUpdateForm, EditProfileForm, UserEditForm, TravelSchedule, ScheduleEntryForm, TravelScheduleForm, FeedbackForm, ReplyForm, FeedbackReply
 from .models import Location, Event, TravelTip, Interest, Hotel, ScheduleEntry, Feedback
 from .utils import get_duffel_schedules, create_duffel_order, cancel_duffel_order
 from django.core.validators import validate_email, ValidationError
@@ -650,11 +650,14 @@ def download_booking_pdf(request, order_id):
     return response
 
 def submit_reply(request, feedback_id):
-    feedback = Feedback.objects.get(id=feedback_id)
+    feedback = get_object_or_404(Feedback, id=feedback_id)
     if request.method == 'POST':
-        form = ReplyForm(request.POST)
-        if form.is_valid():
-            reply = form.save(commit=False)
-            reply.feedback = feedback
-            reply.save()
+        name = request.POST.get('name')
+        message = request.POST.get('message')
+        if name and message:
+            FeedbackReply.objects.create(
+                feedback=feedback,
+                name=name,
+                message=message
+            )
     return redirect('home')

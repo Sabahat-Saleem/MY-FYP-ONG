@@ -361,6 +361,30 @@
                   <p class="mt-2">{{ fb.message }}</p>
                 </div>
               </div>
+              
+<!-- Reply Form + Replies Display -->
+<div class="card-footer bg-white border-top">
+  <form method="POST" action="{% url 'submit_reply' fb.id %}">
+    {% csrf_token %}
+    <div class="mb-2">
+      <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+    </div>
+    <div class="mb-2">
+      <textarea name="message" class="form-control" rows="2" placeholder="Write a reply..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-sm btn-primary">Reply</button>
+  </form>
+
+  <!-- Show replies -->
+  {% for reply in fb.replies.all %}
+    <div class="mt-2 ms-4 p-2 border-start border-2">
+      <strong>{{ reply.name }}</strong> <small class="text-muted">({{ reply.created_at|date:"F j, Y g:i A" }})</small><br>
+      <small>{{ reply.message }}</small>
+    </div>
+  {% empty %}
+    <div class="ms-4 mt-2 text-muted">No replies yet.</div>
+  {% endfor %}
+</div>
             </div>
           {% empty %}
             <p class="text-center text-muted">No feedback submitted yet. Be the first!</p>

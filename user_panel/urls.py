@@ -44,10 +44,8 @@ urlpatterns = [
     path("flight-booking/", views.flight_booking, name="flight_booking"),
     path('download-booking/<str:order_id>/', views.download_booking_pdf, name='booking_pdf'),
     path('feedback/reply/<int:feedback_id>/', views.submit_reply, name='submit_reply'),
-    path('confirm-booking/', views.book_flight, name='confirm_booking')
-
-
-
+    path('confirm-booking/', views.book_flight, name='confirm_booking'),
+    path('reply/<int:feedback_id>/', views.submit_reply, name='submit_reply'),
 ]
 
 if settings.DEBUG:

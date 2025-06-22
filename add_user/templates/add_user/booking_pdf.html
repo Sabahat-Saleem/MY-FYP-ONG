@@ -2,31 +2,37 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Booking PDF</title>
+  <title> Flight Booking Invoice</title>
   <style>
-    body { font-family: Arial, sans-serif; font-size: 14px; }
-    h1 { color: #337289; }
+    body { font-family: Arial, sans-serif; font-size: 14px; background-color: #f9fcfd; color: #000; padding: 20px; }
+    h1 { color: #006747; border-bottom: 2px solid #006747; padding-bottom: 5px; }
     .section { margin-bottom: 20px; }
+    .label { font-weight: bold; color: #333; }
   </style>
 </head>
 <body>
-  <h1>✈️ Flight Booking Confirmation</h1>
+  <h1>🛫 My AIRLINE </h1>
+  <p><strong>Flight Booking Invoice</strong></p>
 
   <div class="section">
-    <strong>Order ID:</strong> {{ order.id }}<br>
-    <strong>Passenger:</strong> {{ order.passengers.0.given_name }} {{ order.passengers.0.family_name }}
+    <span class="label">Order ID:</span> {{ order.id }}<br>
+    <span class="label">Passenger:</span> {{ order.passengers.0.given_name }} {{ order.passengers.0.family_name }}
   </div>
 
   <div class="section">
-    <strong>Total Paid:</strong> {{ order.total_amount }} {{ order.total_currency }}<br>
-    <strong>Status:</strong> {{ order.status }}
+    <span class="label">Total Paid:</span> {{ order.total_amount }} {{ order.total_currency }}<br>
+    <span class="label">Booking Status:</span> {{ order.status }}
   </div>
 
   {% for slice in order.slices %}
     <div class="section">
-      <strong>Flight:</strong> {{ slice.origin.iata_code }} → {{ slice.destination.iata_code }}<br>
-      <strong>Departure:</strong> {{ slice.segments.0.departing_at }}
+      <span class="label">Flight Route:</span> {{ slice.origin.iata_code }} → {{ slice.destination.iata_code }}<br>
+      <span class="label">Departure Time:</span> {{ slice.segments.0.departing_at }}
     </div>
   {% endfor %}
+
+  <p style="font-size: 12px; color: #666; margin-top: 30px;">
+    Thank you for booking with <strong> MY Airlines</strong>. Wishing you a safe and pleasant journey!
+  </p>
 </body>
 </html>

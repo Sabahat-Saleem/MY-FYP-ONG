@@ -37,7 +37,7 @@ def get_duffel_schedules():
         passenger_id = offer_request.get("data", {}).get("passengers", [])[0].get("id")
 
         if not offer_request_id or not passenger_id:
-            print("❌ Offer request or passenger ID missing.")
+            print(" Offer request or passenger ID missing.")
             return {
                 "offer_request_id": None,
                 "passenger_id": None,
@@ -54,7 +54,7 @@ def get_duffel_schedules():
 
         # Step 3: Format offers
         formatted_offers = []
-        for offer in offers_data[:5]:
+        for offer in offers_data[:6]:
             formatted_offer = {
                 "id": offer["id"],
                 "total_amount": offer.get("total_amount"),
