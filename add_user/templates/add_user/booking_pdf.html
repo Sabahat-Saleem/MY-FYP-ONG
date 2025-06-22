@@ -2,37 +2,87 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title> Flight Booking Invoice</title>
+  <title>Flight Booking Invoice</title>
   <style>
-    body { font-family: Arial, sans-serif; font-size: 14px; background-color: #f9fcfd; color: #000; padding: 20px; }
-    h1 { color: #006747; border-bottom: 2px solid #006747; padding-bottom: 5px; }
-    .section { margin-bottom: 20px; }
-    .label { font-weight: bold; color: #333; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      color: #000;
+      margin: 40px;
+    }
+    h1 {
+      color: #006747;
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 5px;
+    }
+    h2 {
+      font-size: 16px;
+      text-align: center;
+      margin-top: 0;
+    }
+    .section-title {
+      font-weight: bold;
+      font-size: 16px;
+      border-bottom: 1px solid #ccc;
+      margin-top: 25px;
+      margin-bottom: 10px;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .label {
+      font-weight: bold;
+      color: #333;
+      width: 180px;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .value {
+      display: inline-block;
+      vertical-align: top;
+    }
+    .flight-box {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+    .footer-note {
+      font-size: 12px;
+      color: #666;
+      margin-top: 30px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <h1>🛫 My AIRLINE </h1>
-  <p><strong>Flight Booking Invoice</strong></p>
+
+  <h1>🛫 My AIRLINE</h1>
+  <h2>Flight Booking Invoice</h2>
 
   <div class="section">
-    <span class="label">Order ID:</span> {{ order.id }}<br>
-    <span class="label">Passenger:</span> {{ order.passengers.0.given_name }} {{ order.passengers.0.family_name }}
+    <div><span class="label">Order ID:</span> <span class="value">{{ order.id }}</span></div>
+    <div><span class="label">Passenger:</span> <span class="value">{{ order.passengers.0.given_name }} {{ order.passengers.0.family_name }}</span></div>
   </div>
 
   <div class="section">
-    <span class="label">Total Paid:</span> {{ order.total_amount }} {{ order.total_currency }}<br>
-    <span class="label">Booking Status:</span> {{ order.status }}
+    <div><span class="label">Total Paid:</span> <span class="value">{{ order.total_amount }} {{ order.total_currency }}</span></div>
+    <div><span class="label">Booking Status:</span> <span class="value">{{ order.status }}</span></div>
   </div>
+
+  <div class="section-title">Flight Details</div>
 
   {% for slice in order.slices %}
-    <div class="section">
-      <span class="label">Flight Route:</span> {{ slice.origin.iata_code }} → {{ slice.destination.iata_code }}<br>
-      <span class="label">Departure Time:</span> {{ slice.segments.0.departing_at }}
+    <div class="flight-box">
+      <div><span class="label">Flight Route:</span> <span class="value">{{ slice.origin.iata_code }} → {{ slice.destination.iata_code }}</span></div>
+      <div><span class="label">Departure Time:</span> <span class="value">{{ slice.segments.0.departing_at }}</span></div>
     </div>
   {% endfor %}
 
-  <p style="font-size: 12px; color: #666; margin-top: 30px;">
-    Thank you for booking with <strong> MY Airlines</strong>. Wishing you a safe and pleasant journey!
+  <p class="footer-note">
+    Thank you for booking with <strong>MY Airlines</strong>. Wishing you a safe and pleasant journey!
   </p>
+
 </body>
 </html>

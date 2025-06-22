@@ -3,6 +3,12 @@ from rapidfuzz import fuzz
 from .models import Location, Event, TravelTip, TravelSchedule, ScheduleEntry
 
 FUZZY_THRESHOLD = 60  # Adjust threshold for match sensitivity (0-100)
+# 1. Calculate fuzzy match score between text and user interests
+# 2. Filter content based on user’s preferred season and travel type
+# 3. Rank and recommend items using fuzzy score matching
+# 4. If no strong matches, use base filtered results as fallback
+# 5. Fetch upcoming user travel schedules and entries (no scoring)
+
 
 def fuzzy_score(text, keywords):
     """Calculate max fuzzy match score between text and list of keywords."""
@@ -23,15 +29,18 @@ def fuzzy_score(text, keywords):
 
 def get_recommendations(user):
     # Base filtered queries
-    base_locations = Location.objects.filter(season=user.preferred_season)
+    season = str(user.preferred_season).capitalize()
+    travel_type = str(user.preferred_travel_type).capitalize()
+
+    base_locations = Location.objects.filter(season=season)
     base_events = Event.objects.filter(
-        season=user.preferred_season,
-        travel_type=user.preferred_travel_type,
+        season=season,
+        travel_type=travel_type,
         date__gte=now().date()
     )
     base_tips = TravelTip.objects.filter(
-        season=user.preferred_season,
-        travel_type=user.preferred_travel_type
+        season=season,
+        travel_type=travel_type
     )
 
     # User interests keywords

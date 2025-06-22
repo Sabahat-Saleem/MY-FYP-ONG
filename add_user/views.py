@@ -386,13 +386,13 @@ def get_interest_info(request):
 def get_recommendations(query):
     query = query.lower().strip()
 
-    # Instead of filtering by name, filter locations by season (assuming Location has season field)
+    # Instead of filtering by name, filter locations by season (on  Location has season field)
     locations = Location.objects.filter(season__iexact=query)
 
     # Events also filter by season and upcoming (future) events
     from django.utils import timezone
     today = timezone.now().date()
-    events = Event.objects.filter(season__iexact=query, date__gte=today)  # assuming Event has 'date' field
+    events = Event.objects.filter(season__iexact=query, date__gte=today)  #  Event has 'date' field
 
     # Travel tips filtered by season or travel_type containing query
     tips = TravelTip.objects.filter(
@@ -413,60 +413,7 @@ def get_recommendations(query):
         'tips': list(tips),
         'schedule_entries': list(schedule_entries),
         }
-    
 
-
-    print(f"Processing recommendations for query: '{query}'")
-    
-    # Dictionary of category-based recommendations
-    recommendations = {
-        "snow": [
-            "Murree", "Naran Kaghan", "Gilgit-Baltistan", "Malam Jabba", "Kaghan Valley",
-            "Azad Kashmir", "Swat Valley", "Ziarat", "Khunjerab Pass"
-        ],
-        "greenery": [
-            "Islamabad", "Murree", "Fairy Meadows", "Shogran", "Hunza Valley", "Naran Kaghan",
-            "Neelum Valley", "Swat Valley", "Kaghan Valley", "Ratti Gali Lake"
-        ],
-        "mountains": [
-            "Hunza Valley", "Gilgit-Baltistan", "Murree", "Kaghan Valley", "Naltar Valley",
-            "Khunjerab Pass", "Deosai National Park", "Ratti Gali Lake", "Babusar Pass"
-        ],
-        "lakes": [
-            "Saif ul Malook", "Ratti Gali Lake", "Attabad Lake", "Shandur Lake", "Keel Lake",
-            "Kund Malir", "Kaghan Lake", "Lulusar Lake", "Naltar Lake"
-        ],
-        "waterfalls": [
-            "Dhani Waterfall (Faisalabad)", "Malam Jabba Waterfalls", "Toli Pir Waterfall (Rawalakot)",
-            "Dhani Waterfall (Neelum Valley)", "Nuranang Waterfall (Kaghan Valley)", "Manthoka Waterfall (Skardu)",
-            "Ratti Gali Waterfall", "Torkham Waterfall (Khyber Pakhtunkhwa)", "Banjosa Waterfall (Rawalakot)",
-            "Shounter Waterfall (Azad Kashmir)"
-        ],
-        "desert": [
-            "Thar Desert", "Cholistan Desert", "Kharan Desert", "Dasht-e-Margo", "Rohi Desert", "Mekran Coast"
-        ],
-        "forests": [
-            "Changa Manga", "Kaghan Valley", "Balochistan Forests", "Margalla Hills", "Kashmir Forests",
-            "Shogran", "Fairy Meadows", "Neelum Valley"
-        ]
-    }
-    
-    # Normalize the query
-    query = query.lower().strip()
-    
-    matched = set()
-
-    # Check if the query matches a category exactly
-    if query in recommendations:
-        matched.update(recommendations[query])  # Add all places from that category
-    else:
-        # If not, check if it matches any place name (case insensitive)
-        for category, places in recommendations.items():
-            for place in places:
-                if query in place.lower():  # Check if query matches part of the place name
-                    matched.add(place)
-    
-    return list(matched)
 def get_suggestions(query):
     # Example list of suggestions (can be replaced with database query or more complex logic)
     all_suggestions = [
@@ -575,20 +522,20 @@ def book_flight(request):
         )
 
         if order:
-            request.session["last_order"] = order  # ✅ For download later
+            request.session["last_order"] = order  #  For download later
             return render(request, "add_user/booking_confirmation.html", {"order": order})
         else:
             return render(request, "add_user/error.html", {
                 "message": "Booking failed due to Duffel API. Try again."
             })
 
-    # ✅ Handle all non-POST requests gracefully
+    # Handle all non-POST requests gracefully
     return redirect("home")
 
    
 def flight_booking(request):
     try:
-        # ✅ Always fetch fresh data to avoid reusing a used offer_request_id
+        # Always fetch fresh data to avoid reusing a used offer_request_id
         flight_data = get_duffel_schedules()
 
         offers = flight_data.get("offers", [])
@@ -597,7 +544,7 @@ def flight_booking(request):
                 "message": "No flight offers available at the moment. Please try again later."
             })
 
-        # ✅ Select the first available offer (or implement logic to show multiple)
+        # Select the first available offer (or implement logic to show multiple)
         selected_offer = offers[0]
         offer_id = selected_offer["id"]
         offer_request_id = flight_data["offer_request_id"]
@@ -613,7 +560,7 @@ def flight_booking(request):
         return render(request, "add_user/flight_booking.html", context)
 
     except Exception as e:
-        # ✅ Catch Duffel API or internal errors
+        #  Catch Duffel API or internal errors
         return render(request, "add_user/error.html", {
             "message": f"Flight search failed: {str(e)}"
         })
